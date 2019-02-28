@@ -49,5 +49,5 @@ data XSec = XSec { ggf :: Double
                  , hv  :: Double
                  , htt :: Double } deriving Show
 
-xsecHSM :: XSec
-xsecHSM = XSec { ggf = 45.2, vbf = 3.925, hv = 2.3845, htt = 0.4987 }
+xsecHSM13 :: XSec
+xsecHSM13 = XSec { ggf = 45.2, vbf = 3.925, hv = 2.3845, htt = 0.4987 }
