@@ -13,27 +13,27 @@ import Data.Complex  (Complex (..), realPart)
 loopFuncFermion :: Mass  -- ^ mass of the Higgs boson
                 -> Mass  -- ^ mass of the fermion in the loop
                 -> Complex Double
-loopFuncFermion mh mf =
-    let t = tau mh mf
+loopFuncFermion mH mF =
+    let t = tau mH mF
         ft = liftCm (t - 1) * ftau t + liftCm t
     in liftCm (3 / (2 * t * t)) * ft
 
 loopFuncFermion' :: Mass -> Mass -> Double
-loopFuncFermion' mh mf = realPart (loopFuncFermion mh mf)
+loopFuncFermion' mH mF = realPart (loopFuncFermion mH mF)
 
 loopFuncVector :: Mass  -- ^ mass of the Higgs boson
                -> Mass  -- ^ mass of the vector boson in the loop
                -> Complex Double
-loopFuncVector mh mv =
-    let t = tau mh mv
+loopFuncVector mH mV =
+    let t = tau mH mV
         ft = liftCm (3 * (2 * t - 1)) * ftau t + liftCm (3 * t + 2 * t * t)
     in liftCm (1 / (7 * t * t)) * ft
 
 loopFuncVector' :: Mass -> Mass -> Double
-loopFuncVector' mh mf = realPart (loopFuncVector mh mf)
+loopFuncVector' mH mF = realPart (loopFuncVector mH mF)
 
 tau :: Mass -> Mass -> Double
-tau mh mi = mh * mh / (4 * mi * mi)
+tau mH mX = mH * mH / (4 * mX * mX)
 
 ftau :: Double -> Complex Double
 ftau t | t > 1     = let t1 = 1 / t
