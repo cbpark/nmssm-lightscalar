@@ -38,5 +38,5 @@ cTotSq mH (HiggsCoupling t l) BR {..} =
     let cSM = couplingSM mH
     in bb * cBottom t ** 2 + cc * cTop t ** 2 + tautau * cBottom t ** 2
        + (ww + zz) * cVector t ** 2
-       + gg * ((cGluon l) / (cGluon (loop cSM))) ** 2
-       + gaga * ((cGamma l) / (cGamma (loop cSM)) ** 2
+       + gg * (cGluon l / cGluon (loop cSM)) ** 2
+       + gaga * (cGamma l / cGamma (loop cSM)) ** 2
