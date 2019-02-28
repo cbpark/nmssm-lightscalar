@@ -1,8 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Analysis.EFT.Coupling (coupling, couplingSM, cTotSq) where
+module Analysis.EFT.Coupling
+    (
+      coupling
+    , couplingSM
+    , couplingHSM
+    , cTotSq) where
 
-import Analysis.Data      (mBottom, mTop, mW, BR (..))
+import Analysis.Data      (mBottom, mTop, mW, mHSM, BR (..))
 import Analysis.LoopFuncs (loopFuncFermion', loopFuncVector')
 import Analysis.Type
 
@@ -32,6 +37,9 @@ coupling mH cTree@TreeLevelCouplings {..} (delGlu, delGam) =
 
 couplingSM :: Mass -> HiggsCoupling
 couplingSM mH = coupling mH (TreeLevelCouplings 1 1 1) (0, 0)
+
+couplingHSM :: HiggsCoupling
+couplingHSM = couplingSM mHSM
 
 cTotSq :: Mass -> HiggsCoupling -> BR -> Double
 cTotSq mH (HiggsCoupling t l) BR {..} =
