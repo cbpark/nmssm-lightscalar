@@ -7,7 +7,7 @@ module Analysis.EFT.Coupling
     , couplingHSM
     , cTotSq) where
 
-import Analysis.Data      (mBottom, mTop, mW, mHSM, BR (..))
+import Analysis.Data      (BR (..), mBottom, mHSM, mTop, mW)
 import Analysis.LoopFuncs (loopFuncFermion', loopFuncVector')
 import Analysis.Type
 

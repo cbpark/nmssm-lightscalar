@@ -27,25 +27,43 @@ data BR = BR { bb     :: Double
              , gaga   :: Double
              } deriving Show
 
-brHSM :: BR
-brHSM = BR { bb     = 5.809e-1
-           , cc     = 2.891e-2
-           , tautau = 6.272e-2
-           , mumu   = 2.176e-4
-           , ww     = 2.137e-1
-           , zz     = 2.619e-2
-           , gg     = 8.187e-2
-           , gaga   = 2.270e-3 }
+rescaleBR :: BR -> BR
+rescaleBR br =
+    let s = sum $ map ($ br) [bb, cc, tautau, mumu, ww, zz, gg, gaga]
+    in BR { bb     = bb     br / s
+          , cc     = cc     br / s
+          , tautau = tautau br / s
+          , mumu   = mumu   br / s
+          , ww     = ww     br / s
+          , zz     = zz     br / s
+          , gg     = gg     br / s
+          , gaga   = gaga   br / s
+          }
 
-brSSM :: BR
-brSSM = BR { bb     = 8.050e-1
-           , cc     = 3.994e-2
-           , tautau = 8.217e-2
-           , mumu   = 2.854e-4
-           , ww     = 5.580e-3
-           , zz     = 7.305e-4
-           , gg     = 6.456e-2
-           , gaga   = 1.412e-3 }
+brHSM, brSSM :: BR
+brHSM = rescaleBR brHSM0
+  where
+    brHSM0 = BR { bb     = 5.809e-1
+                , cc     = 2.891e-2
+                , tautau = 6.272e-2
+                , mumu   = 2.176e-4
+                , ww     = 2.137e-1
+                , zz     = 2.619e-2
+                , gg     = 8.187e-2
+                , gaga   = 2.270e-3
+                }
+
+brSSM = rescaleBR brSSM0
+  where
+    brSSM0 = BR { bb     = 8.050e-1
+                , cc     = 3.994e-2
+                , tautau = 8.217e-2
+                , mumu   = 2.854e-4
+                , ww     = 5.580e-3
+                , zz     = 7.305e-4
+                , gg     = 6.456e-2
+                , gaga   = 1.412e-3
+                }
 
 data XSec = XSec { ggf :: Double
                  , vbf :: Double
