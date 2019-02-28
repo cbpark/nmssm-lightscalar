@@ -45,6 +45,7 @@ cTotSq :: Mass -> HiggsCoupling -> BR -> Double
 cTotSq mH (HiggsCoupling t l) BR {..} =
     let loopSM = loop (couplingSM mH)
     in bb * cBottom t ** 2 + cc * cTop t ** 2 + tautau * cBottom t ** 2
+       + mumu * cBottom t ** 2
        + (ww + zz) * cVector t ** 2
        + gg * (cGluon l / cGluon loopSM) ** 2
        + gaga * (cGamma l / cGamma loopSM) ** 2

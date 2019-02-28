@@ -20,6 +20,7 @@ vEW = 174.10358473791823
 data BR = BR { bb     :: Double
              , cc     :: Double
              , tautau :: Double
+             , mumu   :: Double
              , ww     :: Double
              , zz     :: Double
              , gg     :: Double
@@ -30,8 +31,9 @@ brHSM :: BR
 brHSM = BR { bb     = 5.809e-1
            , cc     = 2.891e-2
            , tautau = 6.272e-2
+           , mumu   = 2.176e-4
            , ww     = 2.137e-1
-           , zz     = 2.619e-1
+           , zz     = 2.619e-2
            , gg     = 8.187e-2
            , gaga   = 2.270e-3 }
 
@@ -39,8 +41,9 @@ brSSM :: BR
 brSSM = BR { bb     = 8.050e-1
            , cc     = 3.994e-2
            , tautau = 8.217e-2
-           , ww     = 0.5580e-2
-           , zz     = 0.7305e-3
+           , mumu   = 2.854e-4
+           , ww     = 5.580e-3
+           , zz     = 7.305e-4
            , gg     = 6.456e-2
            , gaga   = 1.412e-3 }
 
