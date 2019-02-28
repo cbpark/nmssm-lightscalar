@@ -19,7 +19,7 @@ source-repository head
   location:            https://github.com/cbpark/nmssm-lightscalar
 
 executable nmssm
-  main-is:             Main.hs
+  main-is:             nmssm.hs
   other-modules:       Analysis.Data
                        Analysis.LoopFuncs
                        Analysis.Type

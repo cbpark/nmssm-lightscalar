@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Analysis.EFT.Coupling (couplings, couplingsSM) where
+module Analysis.EFT.Coupling (coupling, couplingSM) where
 
 import Analysis.Data      (mBottom, mTop, mW)
 import Analysis.LoopFuncs (loopFuncFermion', loopFuncVector')
@@ -24,11 +24,11 @@ cGam mH TreeLevelCouplings {..} delta =
         wLoop = loopFuncVector'  mH mW
     in (2 / 9) * cTop * tLoop - (7 / 8) * cVector * wLoop + delta
 
-couplings :: Mass -> TreeLevelCouplings -> (Double, Double) -> HiggsCoupling
-couplings mH cTree@TreeLevelCouplings {..} (delGlu, delGam) =
+coupling :: Mass -> TreeLevelCouplings -> (Double, Double) -> HiggsCoupling
+coupling mH cTree@TreeLevelCouplings {..} (delGlu, delGam) =
     let cg  = cGlu mH cTree delGlu
         cga = cGam mH cTree delGam
     in HiggsCoupling cTree (LoopLevelCouplings cg cga)
 
-couplingsSM :: Mass -> HiggsCoupling
-couplingsSM mH = couplings mH (TreeLevelCouplings 1 1 1) (0, 0)
+couplingSM :: Mass -> HiggsCoupling
+couplingSM mH = coupling mH (TreeLevelCouplings 1 1 1) (0, 0)
