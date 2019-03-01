@@ -1,8 +1,8 @@
 module Analysis.Type where
 
 type Mass = Double
-
 type Coupling = Double
+type Angle = Double
 
 data HiggsMass = HiggsMass { h1 :: Mass
                            , h2 :: Mass
