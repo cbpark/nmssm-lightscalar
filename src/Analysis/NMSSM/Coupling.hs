@@ -21,6 +21,7 @@ couplingS (MixingAngles th1 th2 th3) NMSSMParameters {..} =
         ct = cv - cos th1 * sin th3 / tanbeta
         cb = cv + cos th1 * sin th3 * tanbeta
         cTree = TreeLevelCouplings {cTop = ct, cBottom = cb, cVector = cv}
-        delGam = lambda * vEW / (6 * mu) * loopFuncFermion' mS mu
+        absMu = abs mu
+        delGam = lambda * vEW / (6 * absMu) * loopFuncFermion' mS absMu
                  * (cos th2 * cos th3 - sin th1 * sin th2 * sin th3)
     in coupling mS cTree (0, delGam)
