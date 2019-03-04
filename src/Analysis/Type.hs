@@ -4,11 +4,6 @@ type Mass = Double
 type Coupling = Double
 type Angle = Double
 
-data HiggsMass = HiggsMass { h1 :: Mass
-                           , h2 :: Mass
-                           , h3 :: Mass
-                           } deriving Show
-
 data TreeLevelCouplings = TreeLevelCouplings { cTop    :: Double
                                              , cBottom :: Double
                                              , cVector :: Double
@@ -21,3 +16,14 @@ data LoopLevelCouplings = LoopLevelCouplings { cGluon :: Double
 data HiggsCoupling = HiggsCoupling { tree :: TreeLevelCouplings
                                    , loop :: LoopLevelCouplings
                                    } deriving Show
+
+data NMSSMParameters = NMSSMParameters { lambda    :: Double
+                                       , mu        :: Double
+                                       , bigLambda :: Double
+                                       , tanbeta   :: Double
+                                       } deriving Show
+
+data MixingAngles = MixingAngles { theta1 :: Double
+                                 , theta2 :: Double
+                                 , theta3 :: Double
+                                 } deriving Show
