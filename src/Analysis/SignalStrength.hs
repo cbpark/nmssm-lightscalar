@@ -18,11 +18,11 @@ muH :: (HiggsCoupling -> Double) -> HiggsCoupling -> Double
 muH getCSq c = ((*) <$> xsecRatioHSM <*> getCSq) c / ctot2
   where ctot2 = cTotSq mHSM c brHSM
 
-muVVH, muBBH, muTauTauH, muGaGaH :: HiggsCoupling -> Double
-muVVH     = muH (\c -> cVector (tree c) ** 2)
-muBBH     = muH (\c -> cBottom (tree c) ** 2)
-muTauTauH = muBBH
-muGaGaH   = muH (\c -> (cGamma (loop c) / cGamma (loop couplingHSM)) ** 2)
+muVV, muBB, muTauTau, muGaGa :: HiggsCoupling -> Double
+muVV     = muH (\c -> cVector (tree c) ** 2)
+muBB     = muH (\c -> cBottom (tree c) ** 2)
+muTauTau = muBB
+muGaGa   = muH (\c -> (cGamma (loop c) / cGamma (loop couplingHSM)) ** 2)
 
 satisfyMu :: MuData -> Double -> Bool
 satisfyMu MuData {..} mu = mu >= (central + lower) && mu <= (central + upper)
