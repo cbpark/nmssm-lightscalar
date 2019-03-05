@@ -26,6 +26,7 @@ executable nmssm
                        Analysis.Util
                        Analysis.EFT.Coupling
                        Analysis.EFT.SignalStrength
+                       Analysis.NMSSM
                        Analysis.NMSSM.Coupling
                        Analysis.NMSSM.Relations
   build-depends:       base >=4.12 && < 5

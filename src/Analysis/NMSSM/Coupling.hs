@@ -2,39 +2,10 @@
 
 module Analysis.NMSSM.Coupling where
 
-import Analysis.Data               (mHSM, mS, vEW)
-import Analysis.EFT.Coupling       (coupling)
-import Analysis.EFT.SignalStrength
-import Analysis.LoopFuncs          (loopFuncFermion')
-import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
+import Analysis.Data         (mHSM, mS, vEW)
+import Analysis.EFT.Coupling (coupling)
+import Analysis.LoopFuncs    (loopFuncFermion')
 import Analysis.Type
-
-import Control.Monad               (guard)
-
-mkCH :: Double          -- ^ lambda
-     -> Double          -- ^ tan(beta)
-     -> (Angle, Angle)  -- ^ (theta1, theta2)
-     -> Maybe (HiggsCoupling, MixingAngles)
-mkCH lam tanb (th1, th2) = do
-    let cH' = couplingHSM' (MixingAngles th1 th2 0) tanb
-
-    -- check mu_{ZZ}(h) and mu_{bb}(h)
-    guard $ (satisfyMuZZ13 . muVV) cH' && (satisfyMuBB13 . muBB) cH'
-
-    th3 <- getTheta3 (th1, th2) lam tanb
-    let muValue = getMu (th1, th2, th3) lam tanb
-        bigLamValue = getLambda (th1, th2, th3) lam tanb
-        mixing = MixingAngles th1 th2 th3
-        nmssmParam = NMSSMParameters { lambda    = lam
-                                     , mu        = muValue
-                                     , bigLambda = bigLamValue
-                                     , tanbeta   = tanb
-                                     }
-        cH = couplingHSM mixing (tree cH') nmssmParam
-
-    -- check mu_{gamma gamma}(h)
-    guard $ (satisfyMuGaGa13 . muGaGa) cH
-    return (cH, mixing)
 
 couplingHSM' :: MixingAngles -> Double -> HiggsCoupling
 couplingHSM' (MixingAngles th1 th2 _) tanb =
