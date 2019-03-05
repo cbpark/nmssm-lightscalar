@@ -41,8 +41,8 @@ couplingSM mH = coupling mH (TreeLevelCouplings 1 1 1) (0, 0)
 couplingHSM :: HiggsCoupling
 couplingHSM = couplingSM mHSM
 
-cTotSq :: Mass -> HiggsCoupling -> BR -> Double
-cTotSq mH (HiggsCoupling t l) BR {..} =
+cTotSq :: Mass -> BR -> HiggsCoupling -> Double
+cTotSq mH BR {..} (HiggsCoupling t l) =
     let loopSM = loop (couplingSM mH)
     in bb * cBottom t ** 2 + cc * cTop t ** 2 + tautau * cBottom t ** 2
        + mumu * cBottom t ** 2

@@ -3,7 +3,7 @@
 module Analysis.SignalStrength where
 
 import Analysis.Data
-import Analysis.EFT.Coupling (cTotSq, couplingHSM)
+import Analysis.EFT.Coupling (cTotSq, couplingHSM, couplingSM)
 import Analysis.Type
 
 xsecRatioHSM :: HiggsCoupling -> Double
@@ -16,7 +16,7 @@ xsecRatioHSM (HiggsCoupling t l) = num / den
 
 muH :: (HiggsCoupling -> Double) -> HiggsCoupling -> Double
 muH getCSq c = ((*) <$> xsecRatioHSM <*> getCSq) c / ctot2
-  where ctot2 = cTotSq mHSM c brHSM
+  where ctot2 = cTotSq mHSM brHSM c
 
 muVV, muBB, muTauTau, muGaGa :: HiggsCoupling -> Double
 muVV     = muH (\c -> cVector (tree c) ** 2)
@@ -34,3 +34,19 @@ satisfyMuZZ13     = satisfyMu muZZ13
 satisfyMuBB13     = satisfyMu muBB13
 satisfyMuTauTau13 = satisfyMu muTauTau13
 satisfyMuGaGa13   = satisfyMu muGaGa13
+
+ctot2S :: HiggsCoupling -> Double
+ctot2S = cTotSq mS brSSM
+
+muCMS :: HiggsCoupling -> Double
+muCMS c@(HiggsCoupling _ l) = (cglu * cgam ) ** 2 / ctot2S c
+  where
+    (HiggsCoupling _ l0) = couplingSM mS
+    cglu = cGluon l / cGluon l0
+    cgam = cGamma l / cGamma l0
+
+muLEP :: HiggsCoupling -> Double
+muLEP c@(HiggsCoupling t _) = (cvec * cb) ** 2 / ctot2S c
+  where
+    cvec = cVector t
+    cb   = cBottom t
