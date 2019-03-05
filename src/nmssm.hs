@@ -1,8 +1,8 @@
 module Main where
 
 import Analysis.EFT.Coupling
-import Analysis.NMSSM.Coupling (mkCH)
-import Analysis.SignalStrength
+import Analysis.EFT.SignalStrength
+import Analysis.NMSSM.Coupling     (mkCH)
 
 main :: IO ()
 main = do

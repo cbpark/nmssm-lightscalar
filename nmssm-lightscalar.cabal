@@ -22,9 +22,9 @@ executable nmssm
   main-is:             nmssm.hs
   other-modules:       Analysis.Data
                        Analysis.LoopFuncs
-                       Analysis.SignalStrength
                        Analysis.Type
                        Analysis.EFT.Coupling
+                       Analysis.EFT.SignalStrength
                        Analysis.NMSSM.Coupling
                        Analysis.NMSSM.Relations
   build-depends:       base >=4.12 && < 5

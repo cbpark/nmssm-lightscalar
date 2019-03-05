@@ -83,3 +83,7 @@ muZZ13     = MuData 1.05 (-0.11) 0.11
 muBB13     = MuData 1.05 (-0.19) 0.19
 muTauTau13 = MuData 1.15 (-0.23) 0.24
 muGaGa13   = MuData 1.10 (-0.10) 0.10
+
+muCMSData, muLEPData :: MuData
+muCMSData = MuData 0.6   (-0.2)   0.2
+muLEPData = MuData 0.117 (-0.057) 0.057

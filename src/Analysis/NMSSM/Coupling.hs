@@ -6,7 +6,7 @@ import Analysis.Data            (mHSM, mS, vEW)
 import Analysis.EFT.Coupling    (coupling)
 import Analysis.LoopFuncs       (loopFuncFermion')
 import Analysis.NMSSM.Relations (getLambda, getMu, getTheta3)
-import Analysis.SignalStrength
+import Analysis.EFT.SignalStrength
 import Analysis.Type
 
 import Control.Monad            (guard)

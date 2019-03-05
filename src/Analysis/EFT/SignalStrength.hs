@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Analysis.SignalStrength where
+module Analysis.EFT.SignalStrength where
 
 import Analysis.Data
 import Analysis.EFT.Coupling (cTotSq, couplingHSM, couplingSM)
@@ -35,6 +35,10 @@ satisfyMuBB13     = satisfyMu muBB13
 satisfyMuTauTau13 = satisfyMu muTauTau13
 satisfyMuGaGa13   = satisfyMu muGaGa13
 
+satisfyMuCMS, satisfyMuLEP :: Double -> Bool
+satisfyMuCMS = satisfyMu muCMSData
+satisfyMuLEP = satisfyMu muLEPData
+
 ctot2S :: HiggsCoupling -> Double
 ctot2S = cTotSq mS brSSM
 
@@ -46,7 +50,7 @@ muCMS c@(HiggsCoupling _ l) = (cglu * cgam ) ** 2 / ctot2S c
     cgam = cGamma l / cGamma l0
 
 muLEP :: HiggsCoupling -> Double
-muLEP c@(HiggsCoupling t _) = (cvec * cb) ** 2 / ctot2S c
+muLEP c@(HiggsCoupling t _) = (cv * cb) ** 2 / ctot2S c
   where
-    cvec = cVector t
-    cb   = cBottom t
+    cv = cVector t
+    cb = cBottom t
