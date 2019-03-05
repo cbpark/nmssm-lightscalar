@@ -1,4 +1,4 @@
-module Analysis.NMSSM where
+module Analysis.NMSSM (searchNMSSM, calcMuCMS, calcMuLEP) where
 
 import Analysis.EFT.SignalStrength
 import Analysis.NMSSM.Coupling     (couplingHSM, couplingHSM', couplingS)
@@ -6,12 +6,6 @@ import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
 import Analysis.Type
 
 import Control.Monad               (guard)
-
-data NMSSMSolution = NMSSMSolution { params    :: NMSSMParameters
-                                   , hCoupling :: HiggsCoupling
-                                   , sCoupling :: HiggsCoupling
-                                   , mixing    :: MixingAngles
-                                   } deriving Show
 
 searchNMSSM :: Double          -- ^ lambda
             -> Double          -- ^ tan(beta)
@@ -28,9 +22,9 @@ searchNMSSM lam tanb (th1, th2) = do
         bigLamValue = getLambda (th1, th2, th3) lam tanb
         mixingAngle = MixingAngles th1 th2 th3
         nmssmParams = NMSSMParameters { lambda    = lam
+                                      , tanbeta   = tanb
                                       , mu        = muValue
                                       , bigLambda = bigLamValue
-                                      , tanbeta   = tanb
                                       }
         cH = couplingHSM mixingAngle (tree cH') nmssmParams
 
