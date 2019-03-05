@@ -2,20 +2,20 @@
 
 module Analysis.NMSSM.Coupling where
 
-import Analysis.Data            (mHSM, mS, vEW)
-import Analysis.EFT.Coupling    (coupling)
-import Analysis.LoopFuncs       (loopFuncFermion')
-import Analysis.NMSSM.Relations (getLambda, getMu, getTheta3)
+import Analysis.Data               (mHSM, mS, vEW)
+import Analysis.EFT.Coupling       (coupling)
 import Analysis.EFT.SignalStrength
+import Analysis.LoopFuncs          (loopFuncFermion')
+import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
 import Analysis.Type
 
-import Control.Monad            (guard)
+import Control.Monad               (guard)
 
-mkCH :: (Angle, Angle)  -- ^ (theta1, theta2)
-     -> Double          -- ^ lambda
+mkCH :: Double          -- ^ lambda
      -> Double          -- ^ tan(beta)
+     -> (Angle, Angle)  -- ^ (theta1, theta2)
      -> Maybe (HiggsCoupling, MixingAngles)
-mkCH (th1, th2) lam tanb = do
+mkCH lam tanb (th1, th2) = do
     let cH' = couplingHSM' (MixingAngles th1 th2 0) tanb
 
     -- check mu_{ZZ}(h) and mu_{bb}(h)

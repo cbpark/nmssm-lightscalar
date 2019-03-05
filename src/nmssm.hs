@@ -5,7 +5,7 @@ import           Analysis.EFT.SignalStrength
 import           Analysis.NMSSM.Coupling     (mkCH)
 import           Analysis.Util               (mkTheta12)
 
-import qualified Data.Vector.Unboxed         as U
+import qualified Data.Vector                 as V
 
 main :: IO ()
 main = do
@@ -14,7 +14,11 @@ main = do
     putStrLn $ "mu_VV(h) = "   ++ show (muVV couplingHSM)
     putStrLn $ "mu_bb(h) = "   ++ show (muBB couplingHSM)
     putStrLn $ "mu_gaga(h) = " ++ show (muGaGa couplingHSM)
-    print $ mkCH (0.01, -0.0001) 0.65 1.5
+    print $ mkCH 0.65 1.5 (0.01, -0.0001)
 
     ts <- mkTheta12 10
-    U.mapM_ print ts
+    V.mapM_ print ts
+
+    let lam = 0.65; tanb = 2
+        cs = V.mapMaybe (mkCH lam tanb) ts
+    V.mapM_ print cs
