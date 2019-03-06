@@ -1,7 +1,7 @@
 .#*
 *~
 TAGS
-dist-newstyle
+dist*
 cabal.project.local
 .ghc.environment.*
 result
