@@ -1,4 +1,9 @@
-module Analysis.Util (mkTheta12) where
+module Analysis.Util
+    (
+      mkTheta12
+    , parVectorChunk
+    , catMaybes
+    ) where
 
 import           Analysis.Type                   (Angle)
 
@@ -6,6 +11,7 @@ import           Analysis.Type                   (Angle)
 import           Control.Monad.IO.Class          (MonadIO (..))
 import           Control.Monad.ST                (runST)
 import           Control.Monad.Trans.State       (StateT, evalStateT, get, put)
+import           Control.Parallel.Strategies
 import           Data.Vector                     (Vector)
 import qualified Data.Vector                     as V
 import           System.Random.MWC
@@ -32,3 +38,12 @@ thetaPair = do
         sign <- uniform gen
         s1 <- save gen
         return $ if (sign :: Bool) then (t1, t2, s1) else (t1, -t2, s1)
+
+parVectorChunk :: Int -> Strategy (Vector a)
+parVectorChunk n = fmap V.fromList . parListChunk n rseq . V.toList
+
+catMaybes :: Vector (Maybe a) -> Vector a
+catMaybes = V.concatMap maybeToVector
+  where
+    maybeToVector Nothing  = V.empty
+    maybeToVector (Just x) = V.singleton x

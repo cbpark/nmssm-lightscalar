@@ -3,9 +3,11 @@ module Main where
 import           Analysis.EFT.Coupling
 import           Analysis.EFT.SignalStrength
 import           Analysis.NMSSM              (searchNMSSM)
-import           Analysis.Util               (mkTheta12)
+import           Analysis.Util
 
+import           Control.Parallel.Strategies (using)
 import qualified Data.Vector                 as V
+import           System.Environment          (getArgs)
 
 main :: IO ()
 main = do
@@ -16,9 +18,12 @@ main = do
     putStrLn $ "mu_gaga(h) = " ++ show (muGaGa couplingHSM)
     print $ searchNMSSM 0.65 1.5 (0.01, -0.0001)
 
-    ts <- mkTheta12 10
-    V.mapM_ print ts
+    n <- head <$> getArgs
+    ts <- mkTheta12 (read n)
+    -- V.mapM_ print ts
 
     let lam = 0.65; tanb = 2
-        cs = V.mapMaybe (searchNMSSM lam tanb) ts
-    V.mapM_ print cs
+        -- cs = mapMaybe (searchNMSSM lam tanb) ts
+        cs = catMaybes (V.map (searchNMSSM lam tanb) ts `using` parVectorChunk 200)
+    -- V.mapM_ print cs
+    print $ length cs
