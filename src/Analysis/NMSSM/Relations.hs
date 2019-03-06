@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 module Analysis.NMSSM.Relations
     (
       getTheta3
@@ -23,10 +25,10 @@ getTheta3 (th1, th2) lam tanb =
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
 
-        tanbSq = tanb * tanb
-        sin2b = 2 * tanb / (1 + tanbSq)
-        cos2b = (1 - tanbSq) / (1 + tanbSq)
-        coeff =  costh1 / (2 * sin2b * cos2b)
+        !tanbSq = tanb * tanb
+        !sin2b = 2 * tanb / (1 + tanbSq)
+        !cos2b = (1 - tanbSq) / (1 + tanbSq)
+        !coeff =  costh1 / (2 * sin2b * cos2b)
 
         rel1 th3 = mZ2
                    + coeff
@@ -76,7 +78,7 @@ getMu (th1, th2, th3) lam tanb =
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
         (sinth3, costh3) = sincos th3
-        tan2b = 2 * tanb / (1 - tanb * tanb)
+        !tan2b = 2 * tanb / (1 - tanb * tanb)
 
         term1 = - 0.5 * mHSM2 * costh1 ** 2 * sinth2 * costh2
         term2 = - 0.5 * (mH2 - mS2)
@@ -100,8 +102,8 @@ getLambda :: (Angle, Angle, Angle)  -- ^ (theta1, theta2, theta3)
           -> Double
 getLambda (th1, th2, th3) lam tanb =
     let (mS2, mHSM2, mH2) = (mS * mS, mHSM * mHSM, mH * mH)
-        tanbSq = tanb * tanb
-        cos2b = (1 - tanbSq) / (1 + tanbSq)
+        !tanbSq = tanb * tanb
+        !cos2b = (1 - tanbSq) / (1 + tanbSq)
 
         rhs = - 0.5 / cos2b
               * ((mH2 - mS2) * cos th2 * 2 * sin th3 * cos th3
