@@ -18,8 +18,8 @@ source-repository head
   type:                git
   location:            https://github.com/cbpark/nmssm-lightscalar
 
-executable nmssm
-  main-is:             nmssm.hs
+executable searchnmssm
+  main-is:             searchnmssm.hs
   other-modules:       Analysis.Data
                        Analysis.LoopFuncs
                        Analysis.Type
