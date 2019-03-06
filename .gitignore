@@ -1,5 +1,8 @@
-.stack-work
-dist-newstyle
-result
-TAGS
 .#*
+*~
+TAGS
+dist-newstyle
+cabal.project.local
+.ghc.environment.*
+result
+.stack-work
