@@ -1,4 +1,4 @@
-module Analysis.NMSSM (searchNMSSM) where
+module Analysis.NMSSM (searchNMSSM, renderSolution) where
 
 import Analysis.EFT.SignalStrength
 import Analysis.NMSSM.Coupling     (couplingHSM, couplingHSM', couplingS)
@@ -6,6 +6,7 @@ import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
 import Analysis.Type
 
 import Control.Monad               (guard)
+import Data.ByteString.Builder     (Builder)
 
 searchNMSSM :: Double          -- ^ lambda
             -> Double          -- ^ tan(beta)
@@ -48,3 +49,7 @@ searchNMSSM lam tanb (th1, th2) = do
                            , muCMSValue = muCMSVal
                            , muLEPValue = muLEPVal
                            }
+
+renderSolution :: Maybe NMSSMSolution -> Builder
+renderSolution Nothing  = mempty
+renderSolution (Just s) = renderNMSSMSolution s

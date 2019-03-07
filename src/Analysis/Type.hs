@@ -16,9 +16,7 @@ data TreeLevelCouplings = TreeLevelCouplings { cTop    :: !Double
 
 renderTreeLevelCouplings :: TreeLevelCouplings -> Builder
 renderTreeLevelCouplings TreeLevelCouplings {..} =
-    convDbl cTop <> space
-    <> convDbl cBottom <> space
-    <> convDbl cVector
+    convDbl cTop <> space <> convDbl cBottom <> space <> convDbl cVector
 
 data LoopLevelCouplings = LoopLevelCouplings { cGluon :: !Double
                                              , cGamma :: !Double
@@ -43,9 +41,7 @@ data MixingAngles = MixingAngles { theta1 :: !Double
 
 renderMixingAngles :: MixingAngles -> Builder
 renderMixingAngles MixingAngles {..} =
-    convDbl theta1 <> space
-    <> convDbl theta2 <> space
-    <> convDbl theta3
+    convDbl theta1 <> space <> convDbl theta2 <> space <> convDbl theta3
 
 data NMSSMParameters = NMSSMParameters { lambda    :: !Double
                                        , tanbeta   :: !Double
@@ -57,8 +53,7 @@ renderNMSSMParameters :: NMSSMParameters -> Builder
 renderNMSSMParameters NMSSMParameters {..} =
     (byteString . toFixed 2) lambda <> space
     <> (byteString . toFixed 3) tanbeta <> space
-    <> convDbl mu <> space
-    <> convDbl bigLambda
+    <> convDbl mu <> space <> convDbl bigLambda
 
 data NMSSMSolution = NMSSMSolution { params     :: !NMSSMParameters
                                    , hCoupling  :: !HiggsCoupling
@@ -74,7 +69,7 @@ renderNMSSMSolution NMSSMSolution {..} =
     <> renderHiggsCoupling hCoupling <> space
     <> renderHiggsCoupling sCoupling <> space
     <> renderMixingAngles mixing <> space
-    <> convDbl muCMSValue <> space <> convDbl muLEPValue
+    <> convDbl muCMSValue <> space <> convDbl muLEPValue <> charUtf8 '\n'
 
 convDbl :: Double -> Builder
 convDbl = byteString . toExponential 4
