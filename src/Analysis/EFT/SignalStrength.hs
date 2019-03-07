@@ -24,18 +24,19 @@ muBB     = muH (\c -> cBottom (tree c) ** 2)
 muTauTau = muBB
 muGaGa   = muH (\c -> (cGamma (loop c) / cGamma (loop couplingHSM)) ** 2)
 
-satisfyMu :: MuData -> Double -> Bool
-satisfyMu MuData {..} mu = mu >= (central + lower) && mu <= (central + upper)
+satisfyMu :: MuData -> Double -> Double -> Bool
+satisfyMu MuData {..} nsigma mu =
+    mu >= (central + nsigma * lower) && mu <= (central + nsigma * upper)
 
 satisfyMuWW13, satisfyMuZZ13, satisfyMuBB13, satisfyMuTauTau13, satisfyMuGaGa13
-    :: Double -> Bool
+    :: Double -> Double -> Bool
 satisfyMuWW13     = satisfyMu muWW13
 satisfyMuZZ13     = satisfyMu muZZ13
 satisfyMuBB13     = satisfyMu muBB13
 satisfyMuTauTau13 = satisfyMu muTauTau13
 satisfyMuGaGa13   = satisfyMu muGaGa13
 
-satisfyMuCMS, satisfyMuLEP :: Double -> Bool
+satisfyMuCMS, satisfyMuLEP :: Double -> Double -> Bool
 satisfyMuCMS = satisfyMu muCMSData
 satisfyMuLEP = satisfyMu muLEPData
 
