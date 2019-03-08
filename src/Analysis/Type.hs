@@ -53,7 +53,8 @@ renderNMSSMParameters :: NMSSMParameters -> Builder
 renderNMSSMParameters NMSSMParameters {..} =
     (byteString . toFixed 2) lambda <> space
     <> (byteString . toFixed 3) tanbeta <> space
-    <> convDbl mu <> space <> convDbl bigLambda
+    <> (byteString . toFixed 4) mu <> space
+    <> (byteString . toFixed 4) bigLambda
 
 data NMSSMSolution = NMSSMSolution { params     :: !NMSSMParameters
                                    , hCoupling  :: !HiggsCoupling
