@@ -17,7 +17,7 @@ loopFuncFermion :: Mass  -- ^ mass of the Higgs boson
                 -> Complex Double
 loopFuncFermion mH mF =
     let !t = tau mH mF
-        ft = liftCm (t - 1) * ftau t + liftCm t
+        !ft = liftCm (t - 1) * ftau t + liftCm t
     in liftCm (3 / (2 * t * t)) * ft
 
 loopFuncFermion' :: Mass -> Mass -> Double
@@ -29,7 +29,7 @@ loopFuncVector :: Mass  -- ^ mass of the Higgs boson
 loopFuncVector mH mV =
     let !t = tau mH mV
         !t2 = t * t
-        ft = liftCm (3 * (2 * t - 1)) * ftau t + liftCm (3 * t + 2 * t2)
+        !ft = liftCm (3 * (2 * t - 1)) * ftau t + liftCm (3 * t + 2 * t2)
     in liftCm (1 / (7 * t2)) * ft
 
 loopFuncVector' :: Mass -> Mass -> Double
