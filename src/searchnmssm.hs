@@ -26,7 +26,7 @@ main = do
         tanb = tanbeta input
         n = fromMaybe 1000000 (np input)
 
-    putStrLn $ "-- lambda = " ++ show lam ++ ", tan(beta) = " ++ show tanb ++ ":"
+    putStrLn $ "-- Set lambda = " ++ show lam ++ ", tan(beta) = " ++ show tanb
 
     theta12 <- mkTheta12 n
     let solutions = V.map (renderSolution . searchNMSSM lam tanb) theta12
