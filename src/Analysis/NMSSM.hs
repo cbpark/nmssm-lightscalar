@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Analysis.NMSSM (searchNMSSM, renderSolution) where
 
 import Analysis.EFT.SignalStrength
@@ -5,6 +7,9 @@ import Analysis.NMSSM.Coupling     (couplingHSM, couplingHSM', couplingS)
 import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
 import Analysis.Type
 
+#if !(MIN_VERSION_base(4,11,0))
+import Data.Semigroup              ((<>))
+#endif
 import Control.Monad               (guard)
 import Data.ByteString.Builder     (Builder, stringUtf8)
 

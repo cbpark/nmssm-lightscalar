@@ -1,7 +1,11 @@
+{-# LANGUAGE CPP             #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Analysis.Type where
 
+#if !(MIN_VERSION_base(4,11,0))
+import Data.Semigroup                    ((<>))
+#endif
 import Data.ByteString.Builder
 import Data.Double.Conversion.ByteString (toExponential, toFixed)
 

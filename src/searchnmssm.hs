@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                #-}
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE FlexibleInstances  #-}
@@ -10,6 +11,9 @@ module Main where
 import           Analysis.NMSSM              (renderSolution, searchNMSSM)
 import           Analysis.Util               (mkTheta12, parVectorChunk)
 
+#if !(MIN_VERSION_base(4,11,0))
+import           Data.Semigroup              ((<>))
+#endif
 import           Control.Parallel.Strategies (using)
 import           Data.ByteString.Builder
 import           Data.ByteString.Char8       (ByteString)
@@ -43,7 +47,7 @@ main = do
 data InputArgs w = InputArgs
     { lambda  :: w ::: Double       <?> "lambda"
     , tanbeta :: w ::: Double       <?> "tan(beta)"
-    , np      :: w ::: Maybe Int    <?> "number of parameter points"
+    , np      :: w ::: Maybe Int    <?> "number of parameter points to try"
     , output  :: w ::: Maybe String <?> "name of the output file"
     } deriving (Generic)
 
