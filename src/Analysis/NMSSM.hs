@@ -46,7 +46,9 @@ searchNMSSM lam tanb (th1, th2) = do
         muLEPVal = muLEP cS
 
     -- check mu_{gamma gamma}(s) and mu_{bb}(s)
-    guard $ satisfyMuCMS 2 muCMSVal && satisfyMuLEP 2 muLEPVal
+    -- guard $ satisfyMuCMS 2 muCMSVal
+    -- guard $ satisfyMuLEP 2 muLEPVal
+    guard $ satisfyMuCMS 2 muCMSVal || satisfyMuLEP 2 muLEPVal
     return $ NMSSMSolution { params    = nmssmParams
                            , hCoupling = cH
                            , sCoupling = cS
