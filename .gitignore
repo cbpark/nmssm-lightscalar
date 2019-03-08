@@ -6,4 +6,5 @@ cabal.project.local
 .ghc.environment.*
 result
 .stack-work
+*.prof
 *.dat
