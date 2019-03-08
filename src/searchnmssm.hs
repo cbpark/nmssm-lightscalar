@@ -32,7 +32,8 @@ main = do
     let solutions = V.map (renderSolution . searchNMSSM lam tanb) theta12
                     `using` parVectorChunk 200
 
-    let outfile = "output_" ++ show lam  ++ "_" ++ show tanb ++ ".dat"
+    let outfile = fromMaybe ("output_" ++ show lam  ++ "_" ++ show tanb ++ ".dat")
+                  (output input)
     withBinaryFile outfile WriteMode $ \h -> do
         B.hPutStrLn h header
         V.mapM_ (hPutBuilder h) solutions
@@ -40,10 +41,11 @@ main = do
     putStrLn $ "-- " ++ outfile ++ " generated."
 
 data InputArgs w = InputArgs
-                 { lambda  :: w ::: Double    <?> "lambda"
-                 , tanbeta :: w ::: Double    <?> "tan(beta)"
-                 , np      :: w ::: Maybe Int <?> "number of parameter points"
-                 } deriving (Generic)
+    { lambda  :: w ::: Double       <?> "lambda"
+    , tanbeta :: w ::: Double       <?> "tan(beta)"
+    , np      :: w ::: Maybe Int    <?> "number of parameter points"
+    , output  :: w ::: Maybe String <?> "name of the output file"
+    } deriving (Generic)
 
 instance ParseRecord (InputArgs Wrapped)
 deriving instance Show (InputArgs Unwrapped)
