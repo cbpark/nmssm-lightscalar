@@ -6,7 +6,7 @@ import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
 import Analysis.Type
 
 import Control.Monad               (guard)
-import Data.ByteString.Builder     (Builder)
+import Data.ByteString.Builder     (Builder, stringUtf8)
 
 searchNMSSM :: Double          -- ^ lambda
             -> Double          -- ^ tan(beta)
@@ -52,4 +52,4 @@ searchNMSSM lam tanb (th1, th2) = do
 
 renderSolution :: Maybe NMSSMSolution -> Builder
 renderSolution Nothing  = mempty
-renderSolution (Just s) = renderNMSSMSolution s
+renderSolution (Just s) = stringUtf8 "    " <> renderNMSSMSolution s

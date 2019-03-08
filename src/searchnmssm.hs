@@ -1,43 +1,58 @@
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE FlexibleInstances  #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeOperators      #-}
+
 module Main where
 
-import           Analysis.EFT.Coupling
-import           Analysis.EFT.SignalStrength
 import           Analysis.NMSSM              (renderSolution, searchNMSSM)
-import           Analysis.Util
+import           Analysis.Util               (mkTheta12, parVectorChunk)
 
 import           Control.Parallel.Strategies (using)
 import           Data.ByteString.Builder
+import           Data.ByteString.Char8       (ByteString)
+import qualified Data.ByteString.Char8       as B
+import           Data.Maybe                  (fromMaybe)
 import qualified Data.Vector                 as V
-import           System.Environment          (getArgs)
+import           Options.Generic
 import           System.IO                   (IOMode (..), withBinaryFile)
 
 main :: IO ()
 main = do
-    print (couplingSM 125.0)
-    print couplingHSM
-    putStrLn $ "mu_VV(h) = "   ++ show (muVV couplingHSM)
-    putStrLn $ "mu_bb(h) = "   ++ show (muBB couplingHSM)
-    putStrLn $ "mu_gaga(h) = " ++ show (muGaGa couplingHSM)
+    input <- unwrapRecord "Scan the parameter space of the NMSSM"
+    let lam = lambda input
+        tanb = tanbeta input
+        n = fromMaybe 1000000 (np input)
 
-    n <- head <$> getArgs
-    ts <- mkTheta12 (read n)
-    -- V.mapM_ print ts
+    putStrLn $ "-- lambda = " ++ show lam ++ ", tan(beta) = " ++ show tanb ++ ":"
 
-    let lam = 0.65; tanb = 2
-        solutions = V.map (renderSolution . searchNMSSM lam tanb) ts
+    theta12 <- mkTheta12 n
+    let solutions = V.map (renderSolution . searchNMSSM lam tanb) theta12
                     `using` parVectorChunk 200
 
-    withBinaryFile "output.dat" WriteMode $ \h ->
+    let outfile = "output_" ++ show lam  ++ "_" ++ show tanb ++ ".dat"
+    withBinaryFile outfile WriteMode $ \h -> do
+        B.hPutStrLn h header
         V.mapM_ (hPutBuilder h) solutions
 
-    -- V.mapM_ (B.putStrLn . toLazyByteString) cs
-    -- print $ length cs
-    -- let output = renderNMSSMSolutions cs
+    putStrLn $ "-- " ++ outfile ++ " generated."
 
-    -- B.putStrLn $ toLazyByteString $ renderMixingAngles (MixingAngles 0.1 0.1 (-0.1))
-    -- let Just sol = searchNMSSM 0.65 1.5 (0.01, -0.0001)
-    -- print sol
-    -- B.putStrLn $ toLazyByteString $ renderNMSSMSolution sol
+data InputArgs w = InputArgs
+                 { lambda  :: w ::: Double    <?> "lambda"
+                 , tanbeta :: w ::: Double    <?> "tan(beta)"
+                 , np      :: w ::: Maybe Int <?> "number of parameter points"
+                 } deriving (Generic)
 
-    -- withBinaryFile "output.dat" WriteMode $ \h -> hPutBuilder h output
-    -- return ()
+instance ParseRecord (InputArgs Wrapped)
+deriving instance Show (InputArgs Unwrapped)
+
+header :: ByteString
+header = "#" <> " lambda" <> "   tanb" <> "        mu" <> "    Lambda"
+         <> "      Ct(h)" <> "      Cb(h)" <> "      CV(h)"
+         <> "      Cg(h)" <> "      Cga(h)"
+         <> "      Ct(s)" <> "      Cb(s)" <> "      CV(s)"
+         <> "      Cg(s)" <> "      Cga(s)"
+         <> "       theta1" <> "      theta2" <> "     theta3"
+         <> "     mu(CMS)" <> "     mu(LEP)"

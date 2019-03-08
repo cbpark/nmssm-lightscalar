@@ -33,6 +33,7 @@ executable searchnmssm
                      , bytestring
                      , double-conversion
                      , mwc-random
+                     , optparse-generic
                      , parallel
                      , transformers
                      , vector
