@@ -1,5 +1,5 @@
-{ mkDerivation, base, mwc-random, parallel, stdenv, transformers
-, vector
+{ mkDerivation, base, bytestring, double-conversion, mwc-random
+, optparse-generic, parallel, stdenv, transformers, vector
 }:
 mkDerivation {
   pname = "nmssm-lightscalar";
@@ -8,7 +8,8 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    base mwc-random parallel transformers vector
+    base bytestring double-conversion mwc-random optparse-generic
+    parallel transformers vector
   ];
   description = "For studies on the light scalar in the NMSSM";
   license = stdenv.lib.licenses.gpl3;
