@@ -1,6 +1,9 @@
+{-# LANGUAGE BangPatterns #-}
+
 module Analysis.Util
     (
       mkTheta12
+    , mpiHalf2piHalf
     , parVectorChunk
     , catMaybes
     ) where
@@ -33,12 +36,19 @@ thetaPair = do
         gen <- restore s0
         -- [t1, t2] <- replicateM 2 (uniformR (-pi/2, pi/2) gen)
         -- [t1, t2] <- replicateM 2 (normal 0 0.1 gen)
-        t1   <- normal 0    0.05 gen
-        t2   <- normal 0.15 0.05 gen
+        t1'   <- normal 0    0.05 gen
+        t2'   <- normal 0.15 0.05 gen
+        let (!t1, !t2) = (mpiHalf2piHalf t1', mpiHalf2piHalf t2')
+
         sign <- uniform gen
         s1 <- save gen
         -- return (t1, t2, s1)
         return $ if (sign :: Bool) then (t1, t2, s1) else (t1, -t2, s1)
+
+-- | keep cos(th) to be positive.
+mpiHalf2piHalf :: Double -> Double
+mpiHalf2piHalf th | cos th < 0 = asin (- (sin th))
+                  | otherwise  = asin (sin th)
 
 parVectorChunk :: Int -> Strategy (Vector a)
 parVectorChunk n = fmap V.fromList . parListChunk n rseq . V.toList

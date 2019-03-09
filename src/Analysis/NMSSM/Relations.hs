@@ -9,6 +9,7 @@ module Analysis.NMSSM.Relations
 
 import Analysis.Data (mH, mHSM, mS, mZ, vEW)
 import Analysis.Type
+import Analysis.Util (mpiHalf2piHalf)
 
 -- |
 -- The first equation in (24) of
@@ -60,11 +61,6 @@ newton f f' guess epsilon = newton' 100 guess
 
 sincos :: Double -> (Double, Double)
 sincos th = (sin th, cos th)
-
--- | keep cos(th) to be positive.
-mpiHalf2piHalf :: Double -> Double
-mpiHalf2piHalf th | cos th < 0 = asin (- (sin th))
-                  | otherwise  = asin (sin th)
 
 -- |
 -- The second equation in (24) of
