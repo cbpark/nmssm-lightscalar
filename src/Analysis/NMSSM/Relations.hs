@@ -19,9 +19,9 @@ getTheta3 :: (Angle, Angle)  -- ^ (theta1, theta2)
           -> Double          -- ^ tan(beta)
           -> Maybe Double
 getTheta3 (th1, th2) lam tanb =
-    let (mZ2, mS2, mHSM2, mH2) = (mZ * mZ, mS * mS, mHSM * mHSM, mH * mH)
-        lam2 = lam * lam
-        v2 = vEW * vEW
+    let (!mZ2, !mS2, !mHSM2, !mH2) = (mZ * mZ, mS * mS, mHSM * mHSM, mH * mH)
+        !lam2 = lam * lam
+        !v2 = vEW * vEW
 
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
@@ -60,7 +60,7 @@ newton f f' guess epsilon = newton' 100 guess
                          else newton' (i - 1) guess1
 
 sincos :: Double -> (Double, Double)
-sincos th = (sin th, cos th)
+sincos th = let !sinth = sin th; !costh = cos th in (sinth, costh)
 
 -- |
 -- The second equation in (24) of
@@ -70,7 +70,7 @@ getMu :: (Angle, Angle, Angle)  -- ^ (theta1, theta2, theta3)
       -> Double                 -- ^ tan(beta)
       -> Double
 getMu (th1, th2, th3) lam tanb =
-    let (mS2, mHSM2, mH2) = (mS * mS, mHSM * mHSM, mH * mH)
+    let (!mS2, !mHSM2, !mH2) = (mS * mS, mHSM * mHSM, mH * mH)
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
         (sinth3, costh3) = sincos th3
@@ -97,7 +97,7 @@ getLambda :: (Angle, Angle, Angle)  -- ^ (theta1, theta2, theta3)
           -> Double                 -- ^ tan(beta)
           -> Double
 getLambda (th1, th2, th3) lam tanb =
-    let (mS2, mHSM2, mH2) = (mS * mS, mHSM * mHSM, mH * mH)
+    let (!mS2, !mHSM2, !mH2) = (mS * mS, mHSM * mHSM, mH * mH)
         !tanbSq = tanb * tanb
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
 
