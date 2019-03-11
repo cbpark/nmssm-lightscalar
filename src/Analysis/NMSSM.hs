@@ -28,7 +28,7 @@ searchNMSSM lam tanb (th1, th2) = do
     let !muValue = getMu (th1, th2, th3) lam tanb
 
     -- check the LEP limit on chargino
-    guard $ abs muValue > 103.5
+    -- guard $ abs muValue > 103.5
 
     let bigLamValue = getLambda (th1, th2, th3) lam tanb
         mixingAngle = MixingAngles th1 th2 th3
