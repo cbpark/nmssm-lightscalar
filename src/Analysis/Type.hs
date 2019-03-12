@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP             #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StrictData      #-}
 
 module Analysis.Type where
 
@@ -13,44 +14,44 @@ type Mass = Double
 type Coupling = Double
 type Angle = Double
 
-data TreeLevelCouplings = TreeLevelCouplings { cTop    :: !Double
-                                             , cBottom :: !Double
-                                             , cVector :: !Double
+data TreeLevelCouplings = TreeLevelCouplings { cTop    :: Double
+                                             , cBottom :: Double
+                                             , cVector :: Double
                                              } deriving Show
 
 renderTreeLevelCouplings :: TreeLevelCouplings -> Builder
 renderTreeLevelCouplings TreeLevelCouplings {..} =
     convDbl cTop <> space <> convDbl cBottom <> space <> convDbl cVector
 
-data LoopLevelCouplings = LoopLevelCouplings { cGluon :: !Double
-                                             , cGamma :: !Double
+data LoopLevelCouplings = LoopLevelCouplings { cGluon :: Double
+                                             , cGamma :: Double
                                              } deriving Show
 
 renderLoopLevelCouplings :: LoopLevelCouplings -> Builder
 renderLoopLevelCouplings LoopLevelCouplings {..} =
     convDbl cGluon <> space <> convDbl cGamma
 
-data HiggsCoupling = HiggsCoupling { tree :: !TreeLevelCouplings
-                                   , loop :: !LoopLevelCouplings
+data HiggsCoupling = HiggsCoupling { tree :: TreeLevelCouplings
+                                   , loop :: LoopLevelCouplings
                                    } deriving Show
 
 renderHiggsCoupling :: HiggsCoupling -> Builder
 renderHiggsCoupling HiggsCoupling {..} =
     renderTreeLevelCouplings tree <> space <> renderLoopLevelCouplings loop
 
-data MixingAngles = MixingAngles { theta1 :: !Double
-                                 , theta2 :: !Double
-                                 , theta3 :: !Double
+data MixingAngles = MixingAngles { theta1 :: Double
+                                 , theta2 :: Double
+                                 , theta3 :: Double
                                  } deriving Show
 
 renderMixingAngles :: MixingAngles -> Builder
 renderMixingAngles MixingAngles {..} =
     convDbl theta1 <> space <> convDbl theta2 <> space <> convDbl theta3
 
-data NMSSMParameters = NMSSMParameters { lambda    :: !Double
-                                       , tanbeta   :: !Double
-                                       , mu        :: !Double
-                                       , bigLambda :: !Double
+data NMSSMParameters = NMSSMParameters { lambda    :: Double
+                                       , tanbeta   :: Double
+                                       , mu        :: Double
+                                       , bigLambda :: Double
                                        } deriving Show
 
 renderNMSSMParameters :: NMSSMParameters -> Builder
@@ -60,12 +61,12 @@ renderNMSSMParameters NMSSMParameters {..} =
     <> (byteString . toFixed 4) mu <> space
     <> (byteString . toFixed 4) bigLambda
 
-data NMSSMSolution = NMSSMSolution { params     :: !NMSSMParameters
-                                   , hCoupling  :: !HiggsCoupling
-                                   , sCoupling  :: !HiggsCoupling
-                                   , mixing     :: !MixingAngles
-                                   , muCMSValue :: !Double
-                                   , muLEPValue :: !Double
+data NMSSMSolution = NMSSMSolution { params     :: NMSSMParameters
+                                   , hCoupling  :: HiggsCoupling
+                                   , sCoupling  :: HiggsCoupling
+                                   , mixing     :: MixingAngles
+                                   , muCMSValue :: Double
+                                   , muLEPValue :: Double
                                    } deriving Show
 
 renderNMSSMSolution :: NMSSMSolution -> Builder
