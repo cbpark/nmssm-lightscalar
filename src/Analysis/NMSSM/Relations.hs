@@ -29,18 +29,20 @@ getTheta3 (th1, th2) lam tanb =
         !tanbSq = tanb * tanb
         !sin2b = 2 * tanb / (1 + tanbSq)
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
-        !coeff =  costh1 / (2 * sin2b * cos2b)
+        !coeff = costh1 / (2 * sin2b * cos2b)
 
-        rel1 th3 = mZ2
-                   + coeff
-                   * (2 * sinth2 * sin th3 * cos th3 * (mH2 - mS2)
-                      + 2 * sinth1 * costh2
-                         * (mHSM2
-                            - cos th3 ** 2 * mH2 - sin th3 ** 2 * mS2))
-                   - lam2 * v2
-        rel1' th3 = 4 * coeff * (mH2 - mS2)
-                    * (sinth2 * (cos th3 ** 2 - sin th3 ** 2)
-                      + sinth1 * costh2 * sin th3 * cos th3)
+        rel1 th3 = let (sinth3, costh3) = sincos th3
+                   in mZ2
+                      + coeff
+                      * (2 * sinth2 * sinth3 * costh3 * (mH2 - mS2)
+                         + 2 * sinth1 * costh2
+                            * (mHSM2
+                               - costh3 ** 2 * mH2 - sinth3 ** 2 * mS2))
+                      - lam2 * v2
+        rel1' th3 = let (sinth3, costh3) = sincos th3
+                    in 4 * coeff * (mH2 - mS2)
+                       * (sinth2 * (costh3 ** 2 - sinth3 ** 2)
+                         + sinth1 * costh2 * sinth3 * costh3)
     in mpiHalf2piHalf <$> newton rel1 rel1' 0 1.0e-6
 
 newton :: (Double -> Double)
