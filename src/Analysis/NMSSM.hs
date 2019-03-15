@@ -16,24 +16,26 @@ import Data.ByteString.Builder     (Builder, stringUtf8)
 
 searchNMSSM :: Double          -- ^ lambda
             -> Double          -- ^ tan(beta)
+            -> Mass            -- ^ heavy Higgs mass
             -> (Angle, Angle)  -- ^ (theta1, theta2)
             -> Maybe NMSSMSolution
-searchNMSSM lam tanb (th1, th2) = do
+searchNMSSM lam tanb mH (th1, th2) = do
     let !cH' = couplingHSM' (MixingAngles th1 th2 0) tanb
 
     -- check mu_{ZZ}(h) and mu_{bb}(h)
     guard $ (satisfyMuZZ13 2 . muVV) cH' && (satisfyMuBB13 2 . muBB) cH'
 
-    th3 <- getTheta3 (th1, th2) lam tanb
-    let !muValue = getMu (th1, th2, th3) lam tanb
+    th3 <- getTheta3 (th1, th2) lam tanb mH
+    let !muValue = getMu (th1, th2, th3) lam tanb mH
 
     -- check the LEP limit on chargino
     -- guard $ abs muValue > 103.5
 
-    let bigLamValue = getLambda (th1, th2, th3) lam tanb
+    let bigLamValue = getLambda (th1, th2, th3) lam tanb mH
         mixingAngle = MixingAngles th1 th2 th3
         nmssmParams = NMSSMParameters { lambda    = lam
                                       , tanbeta   = tanb
+                                      , mh3       = mH
                                       , mu        = muValue
                                       , bigLambda = bigLamValue
                                       }

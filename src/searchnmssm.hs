@@ -28,15 +28,19 @@ main = do
     input <- unwrapRecord "Scan the parameter space of the NMSSM"
     let lam = lambda input
         tanb = tanbeta input
+        mH = fromMaybe 1000 (mh3 input)
         n = fromMaybe 1000000 (np input)
 
     putStrLn $ "-- Set lambda = " ++ show lam ++ ", tan(beta) = " ++ show tanb
+        ++ ", m_h3 = " ++ show mH
 
     theta12 <- mkTheta12 n
-    let solutions = V.map (renderSolution . searchNMSSM lam tanb) theta12
+    let solutions = V.map (renderSolution . searchNMSSM lam tanb mH) theta12
                     `using` parVectorChunk 200
 
-    let outfile = fromMaybe ("output_" ++ show lam  ++ "_" ++ show tanb ++ ".dat")
+    let outfile = fromMaybe ("output_"
+                             ++ show lam  ++ "_" ++ show tanb ++ "_" ++ show mH
+                             ++ ".dat")
                   (output input)
     withBinaryFile outfile WriteMode $ \h -> do
         B.hPutStrLn h header
@@ -47,6 +51,7 @@ main = do
 data InputArgs w = InputArgs
     { lambda  :: w ::: Double       <?> "lambda"
     , tanbeta :: w ::: Double       <?> "tan(beta)"
+    , mh3     :: w ::: Maybe Double <?> "heavy Higgs mass"
     , np      :: w ::: Maybe Int    <?> "number of parameter points to try"
     , output  :: w ::: Maybe String <?> "name of the output file"
     } deriving (Generic)
@@ -55,7 +60,8 @@ instance ParseRecord (InputArgs Wrapped)
 deriving instance Show (InputArgs Unwrapped)
 
 header :: ByteString
-header = "#" <> " lambda" <> "   tanb" <> "        mu" <> "    Lambda"
+header = "#" <> " lambda" <> "   tanb" <> "       mh3"
+         <> "        mu" <> "    Lambda"
          <> "      Ct(h)" <> "      Cb(h)" <> "      CV(h)"
          <> "      Cg(h)" <> "      Cga(h)"
          <> "      Ct(s)" <> "      Cb(s)" <> "      CV(s)"

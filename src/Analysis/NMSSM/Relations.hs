@@ -7,7 +7,7 @@ module Analysis.NMSSM.Relations
     , getLambda
     ) where
 
-import Analysis.Data (mH, mHSM, mS, mZ, vEW)
+import Analysis.Data (mHSM, mS, mZ, vEW)
 import Analysis.Type
 import Analysis.Util (mpiHalf2piHalf)
 
@@ -17,8 +17,9 @@ import Analysis.Util (mpiHalf2piHalf)
 getTheta3 :: (Angle, Angle)  -- ^ (theta1, theta2)
           -> Double          -- ^ lambda
           -> Double          -- ^ tan(beta)
+          -> Mass            -- ^ heavy Higgs mass
           -> Maybe Double
-getTheta3 (th1, th2) lam tanb =
+getTheta3 (th1, th2) lam tanb mH =
     let (!mZ2, !mS2, !mHSM2, !mH2) = (mZ * mZ, mS * mS, mHSM * mHSM, mH * mH)
         !lam2 = lam * lam
         !v2 = vEW * vEW
@@ -70,8 +71,9 @@ sincos th = let !sinth = sin th; !costh = cos th in (sinth, costh)
 getMu :: (Angle, Angle, Angle)  -- ^ (theta1, theta2, theta3)
       -> Double                 -- ^ lambda
       -> Double                 -- ^ tan(beta)
+      -> Mass                   -- ^ heavy Higgs mass
       -> Double
-getMu (th1, th2, th3) lam tanb =
+getMu (th1, th2, th3) lam tanb mH =
     let (!mS2, !mHSM2, !mH2) = (mS * mS, mHSM * mHSM, mH * mH)
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
@@ -97,8 +99,9 @@ getMu (th1, th2, th3) lam tanb =
 getLambda :: (Angle, Angle, Angle)  -- ^ (theta1, theta2, theta3)
           -> Double                 -- ^ lambda
           -> Double                 -- ^ tan(beta)
+          -> Mass                   -- ^ heavy Higgs mass
           -> Double
-getLambda (th1, th2, th3) lam tanb =
+getLambda (th1, th2, th3) lam tanb mH =
     let (!mS2, !mHSM2, !mH2) = (mS * mS, mHSM * mHSM, mH * mH)
         !tanbSq = tanb * tanb
         !cos2b = (1 - tanbSq) / (1 + tanbSq)

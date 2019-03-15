@@ -8,10 +8,9 @@ mBottom = 4.7
 mW      = 80.379
 mZ      = 91.1876
 
-mHSM, mS, mH :: Mass
+mHSM, mS :: Mass
 mHSM = 125.0
 mS   = 96.0
-mH   = 1000.0
 
 vEW :: Double
 vEW = 174.10358473791823
