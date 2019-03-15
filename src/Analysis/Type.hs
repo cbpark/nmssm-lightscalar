@@ -59,8 +59,8 @@ renderNMSSMParameters :: NMSSMParameters -> Builder
 renderNMSSMParameters NMSSMParameters {..} =
     (byteString . toFixed 2) lambda <> space
     <> (byteString . toFixed 3) tanbeta <> space
-    <> (byteString . toFixed 4) mu <> space
     <> (byteString . toFixed 1) mh3 <> space
+    <> (byteString . toFixed 4) mu <> space
     <> (byteString . toFixed 4) bigLambda
 
 data NMSSMSolution = NMSSMSolution { params     :: NMSSMParameters
