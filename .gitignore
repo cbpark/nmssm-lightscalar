@@ -8,3 +8,4 @@ result
 .stack-work
 *.prof
 *.dat
+*.old
