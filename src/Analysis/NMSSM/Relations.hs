@@ -24,7 +24,16 @@ instance Semigroup Rel where
         let sumrel     x = rel1     x + rel2     x
             sumdiffrel x = diffrel1 x + diffrel2 x
         in Rel sumrel sumdiffrel
+{-
+  lambda^2 v^2 = F(mH^2), lambda v mu = G(mH^2).
 
+  Define r = lambda v / |mu|, so lambda v = r |mu|. Then,
+
+  r^2 mu^2 = F(mH^2), sign(mu) r mu^2 = G(mH^2).
+
+  By combining them, - (sign(mu) / r) F(mH^2) + G(mH^2) = 0,
+  which can be used to obtain mH^2.
+-}
 eqF :: MixingAngles -> Double -> Double -> TanBeta -> Rel
 eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
     let (!mZ2, !mS2, !mHSM2) = (massSq mZ, massSq mS, massSq mHSM)
