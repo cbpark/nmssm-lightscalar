@@ -1,65 +1,100 @@
 {-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE CPP          #-}
+{-# LANGUAGE MultiWayIf   #-}
 
-module Analysis.NMSSM (searchNMSSM, renderSolution) where
+module Analysis.NMSSM where
 
+import Analysis.Data               (mHSM)
 import Analysis.EFT.SignalStrength
-import Analysis.NMSSM.Coupling     (couplingHSM, couplingHSM', couplingS)
-import Analysis.NMSSM.Relations    (getLambda, getMu, getTheta3)
+import Analysis.NMSSM.Coupling     (couplingH, couplingS)
+import Analysis.NMSSM.Relations    (getLambda, getMH3, getMu)
 import Analysis.Type
+import Analysis.Util               (genUniformValue)
 
-#if !(MIN_VERSION_base(4,11,0))
-import Data.Semigroup              ((<>))
-#endif
-import Control.Monad               (guard)
-import Data.ByteString.Builder     (Builder, stringUtf8)
+import Control.Monad.IO.Class      (MonadIO (..))
+import Control.Monad.Trans.State
+import Data.Maybe                  (fromMaybe, isNothing)
+import System.Random.MWC           (Seed)
 
-searchNMSSM :: Double          -- ^ lambda
-            -> Double          -- ^ tan(beta)
-            -> Mass            -- ^ heavy Higgs mass
-            -> (Angle, Angle)  -- ^ (theta1, theta2)
-            -> Maybe NMSSMSolution
-searchNMSSM lam tanb mH (th1, th2) = do
-    let !cH' = couplingHSM' (MixingAngles th1 th2 0) tanb
+searchNMSSM :: MonadIO m
+            => Double          -- ^ r = \lambda v / |\mu|
+            -> Double          -- ^ sign(\mu)
+            -> (Angle, Angle)  -- ^ (theta_1, theta_2)
+            -> StateT Seed m (Maybe NMSSMSolution)
+searchNMSSM r signMu (th1, th2) = do
+    (higgsResult, s) <- runState (searchHiggs r (th1, th2)) <$> get
 
-    -- check mu_{ZZ}(h) and mu_{bb}(h)
-    guard $ (satisfyMuZZ13 2 . muVV) cH' && (satisfyMuBB13 2 . muBB) cH'
+    if isNothing higgsResult
+       then return Nothing
+       else do
+        -- liftIO $ print higgsResult
+        let Just (tanb, cH) = higgsResult
+            (singletResult, s') = runState (searchSinglet r tanb (th1, th2)) s
 
-    th3 <- getTheta3 (th1, th2) lam tanb mH
-    let !muValue = getMu (th1, th2, th3) lam tanb mH
+        put s'
 
-    -- check the LEP limit on chargino
-    -- guard $ abs muValue > 103.5
+        -- liftIO $ print singletResult
+        let (th3, cS, muCMSVal, muLEPVal) =
+                fromMaybe (Angle 0, NullHiggsCoupling, 0, 0) singletResult
+            mixingAngles = MixingAngles th1 th2 th3
+            mH3' = fromMaybe (Mass 0) (getMH3 mixingAngles r signMu tanb)
 
-    let bigLamValue = getLambda (th1, th2, th3) lam tanb mH
-        mixingAngle = MixingAngles th1 th2 th3
-        nmssmParams = NMSSMParameters { lambda    = lam
-                                      , tanbeta   = tanb
-                                      , mh3       = mH
-                                      , mu        = muValue
-                                      , bigLambda = bigLamValue
-                                      }
-        cH = couplingHSM mixingAngle (tree cH') nmssmParams
+        if mH3' < mHSM
+            then return Nothing
+            else do
+              let (mu', lambda') = if isNothing singletResult
+                                   then (0, 0)
+                                   else ( getMu mixingAngles r signMu tanb mH3'
+                                        , getLambda r mu' )
+                  nmssmParameters = NMSSMParameters { lambda  = lambda'
+                                                    , tanbeta = tanb
+                                                    , mh3     = mH3'
+                                                    , mu      = mu' }
+        -- liftIO $ print nmssmParameters
+              return . Just $ NMSSMSolution { rValue     = r
+                                            , params     = nmssmParameters
+                                            , hCoupling  = cH
+                                            , sCoupling  = cS
+                                            , mixing     = mixingAngles
+                                            , muCMSValue = muCMSVal
+                                            , muLEPValue = muLEPVal }
 
-    -- check mu_{gamma gamma}(h)
-    guard $ (satisfyMuGaGa13 2 . muGaGa) cH
+searchHiggs :: Double -> (Angle, Angle)
+            -> State Seed (Maybe (TanBeta, HiggsCoupling))
+searchHiggs r (th1, th2) = do
+    let !mixingAngles = MixingAngles th1 th2 (Angle 0)
 
-    let !cS = couplingS mixingAngle nmssmParams
-        !muCMSVal = muCMS cS
-        !muLEPVal = muLEP cS
+        searchHiggs' :: Int -> Seed -> (Maybe (TanBeta, HiggsCoupling), Seed)
+        searchHiggs' !n s0 =
+            let (tanbVal, s1) = genUniformValue (1.5, 10) s0
+                tanb = TanBeta tanbVal
+                !cH = couplingH mixingAngles tanb r
+            in if | (satisfyMuZZ13 2 . muVV) cH
+                    && (satisfyMuBB13 2 . muBB) cH
+                    && (satisfyMuGaGa13 2 . muGaGa) cH
+                              -> (Just (tanb, cH), s1)
+                  | n == 0    -> (Nothing, s1)
+                  | otherwise -> searchHiggs' (n - 1) s1
 
-    -- check mu_{gamma gamma}(s) and mu_{bb}(s)
-    -- guard $ satisfyMuCMS 2 muCMSVal
-    -- guard $ satisfyMuLEP 2 muLEPVal
-    guard $ satisfyMuCMS 2 muCMSVal || satisfyMuLEP 2 muLEPVal
-    return $ NMSSMSolution { params    = nmssmParams
-                           , hCoupling = cH
-                           , sCoupling = cS
-                           , mixing    = mixingAngle
-                           , muCMSValue = muCMSVal
-                           , muLEPValue = muLEPVal
-                           }
+    (result, s) <- searchHiggs' 10000 <$> get
+    put s
+    return result
 
-renderSolution :: Maybe NMSSMSolution -> Builder
-renderSolution Nothing  = mempty
-renderSolution (Just s) = stringUtf8 "    " <> renderNMSSMSolution s
+searchSinglet :: Double -> TanBeta -> (Angle, Angle)
+              -> State Seed (Maybe (Angle, HiggsCoupling, Double, Double))
+searchSinglet r tanb (th1, th2) = do
+    let searchSinglet' ::
+            Int -> Seed -> (Maybe (Angle, HiggsCoupling, Double, Double), Seed)
+        searchSinglet' !n s0 =
+            let (th3Val, s1) = genUniformValue (-pi/2, pi/2) s0
+                th3' = Angle th3Val
+                !cS = couplingS (MixingAngles th1 th2 th3') tanb r
+                muCMSVal' = muCMS cS
+                muLEPVal' = muLEP cS
+            in if | satisfyMuCMS 2 muCMSVal' && satisfyMuLEP 2 muLEPVal'
+                              -> (Just (th3', cS, muCMSVal', muLEPVal'), s1)
+                  | n == 0    -> (Nothing, s1)
+                  | otherwise -> searchSinglet' (n - 1) s1
+
+    (result, s) <- searchSinglet' 10000 <$> get
+    put s
+    return result

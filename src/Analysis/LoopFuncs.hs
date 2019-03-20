@@ -36,7 +36,7 @@ loopFuncVector' :: Mass -> Mass -> Double
 loopFuncVector' mH mF = realPart (loopFuncVector mH mF)
 
 tau :: Mass -> Mass -> Double
-tau mH mX = let !x = mH / (2 * mX) in x * x
+tau (Mass mH) (Mass mX) = let !x = mH / (2 * mX) in x * x
 
 ftau :: Double -> Complex Double
 ftau t | t > 1     = let !t1 = sqrt (1 - 1 / t)

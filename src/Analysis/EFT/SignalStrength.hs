@@ -7,6 +7,7 @@ import Analysis.EFT.Coupling (cTotSq, couplingHSM, couplingSM)
 import Analysis.Type
 
 xsecRatioHSM :: HiggsCoupling -> Double
+xsecRatioHSM NullHiggsCoupling   = 0
 xsecRatioHSM (HiggsCoupling t l) = num / den
   where
     num = (cGluon l / cGluon (loop couplingHSM)) ** 2 * ggf xsecHSM13
@@ -44,6 +45,7 @@ ctot2S :: HiggsCoupling -> Double
 ctot2S = cTotSq mS brSSM
 
 muCMS :: HiggsCoupling -> Double
+muCMS NullHiggsCoupling     = 0
 muCMS c@(HiggsCoupling _ l) = (cglu * cgam ) ** 2 / ctot2S c
   where
     (HiggsCoupling _ l0) = couplingSM mS
@@ -51,6 +53,7 @@ muCMS c@(HiggsCoupling _ l) = (cglu * cgam ) ** 2 / ctot2S c
     cgam = cGamma l / cGamma l0
 
 muLEP :: HiggsCoupling -> Double
+muLEP NullHiggsCoupling     = 0
 muLEP c@(HiggsCoupling t _) = (cv * cb) ** 2 / ctot2S c
   where
     cv = cVector t
