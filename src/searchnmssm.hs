@@ -18,11 +18,13 @@ import           Analysis.Util             (mkTheta12)
 -- import           Data.ByteString.Builder
 -- import           Data.ByteString.Char8       (ByteString)
 -- import qualified Data.ByteString.Char8       as B
+import           Control.Monad             (when)
 import           Data.Maybe                (fromMaybe)
 import qualified Data.Vector               as V
 import           Options.Generic
 -- import           System.IO                   (IOMode (..), withBinaryFile)
 import           Control.Monad.Trans.State
+import           System.Exit               (die)
 import           System.Random.MWC
 
 main :: IO ()
@@ -31,6 +33,9 @@ main = do
     let r = rvalue input
         signMu = signum (musign input)
         n = fromMaybe 1000000 (np input)
+
+    when (r < 0) $ die "The r value must be positive."
+    when (signMu == 0) $ die "The sign of mu must be nonzero."
 
     putStrLn $ "-- Set r = " ++ show r ++ ", sign(mu) = " ++ show signMu
 
