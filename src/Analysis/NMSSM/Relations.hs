@@ -25,14 +25,14 @@ instance Semigroup Rel where
             sumdiffrel x = diffrel1 x + diffrel2 x
         in Rel sumrel sumdiffrel
 {-
-  lambda^2 v^2 = F(mH^2), lambda v mu = G(mH^2).
+  lambda^2 v^2 = F(mH), lambda v mu = G(mH).
 
   Define r = lambda v / |mu|, so lambda v = r |mu|. Then,
 
-  r^2 mu^2 = F(mH^2), sign(mu) r mu^2 = G(mH^2).
+  r^2 mu^2 = F(mH), sign(mu) r mu^2 = G(mH).
 
-  By combining them, - (sign(mu) / r) F(mH^2) + G(mH^2) = 0,
-  which can be used to obtain mH^2.
+  By combining them, - (sign(mu) / r) F(mH) + G(mH) = 0,
+  which can be used to obtain mH.
 -}
 eqF :: MixingAngles -> Double -> Double -> TanBeta -> Rel
 eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
@@ -46,15 +46,16 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
         !coeff = costh1 / (2 * sin2b * cos2b)
 
-        f mHSq = (/ (-r)) . (* signMu) $
-                 mZ2 + coeff * (2 * sinth2 * sinth3 * costh3 * (mHSq - mS2)
-                                + 2 * sinth1 * costh2
-                                   * (mHSM2
-                                      - costh3 ** 2 * mHSq - sinth3 ** 2 * mS2))
+        f mH = let !mHSq = mH * mH
+               in (/ (-r)) . (* signMu) $
+                  mZ2 + coeff * (2 * sinth2 * sinth3 * costh3 * (mHSq - mS2)
+                                 + 2 * sinth1 * costh2
+                                    * (mHSM2
+                                       - costh3 ** 2 * mHSq - sinth3 ** 2 * mS2))
 
-        f' _ = (/ (-r)) . (* signMu) $
-               coeff * (2 * sinth2 * sinth3 * costh3
-                        - 2 * sinth1 * costh2 * costh3 ** 2)
+        f' mH = (/ (-r)) . (* signMu) $
+                4 * coeff * mH * costh3 * (sinth2 * sinth3
+                                           - sinth1 * costh2 * costh3)
     in Rel f f'
 
 eqG :: MixingAngles -> TanBeta -> Rel
@@ -66,25 +67,23 @@ eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
 
         !tan2b = 2 * tanb / (1 - tanb * tanb)
 
-        g1 _    = - 0.5 * mHSM2 * costh1 ** 2 * sinth2 * costh2
-        g2 mHSq = - 0.5 * (mHSq - mS2)
-                  * sinth1 * (costh2 ** 2 - sinth2 ** 2) * sinth3 * costh3
-        g3 mHSq = 0.5 * ((mHSq - mS2 * sinth1 ** 2) * sinth3 ** 2
-                         - (mHSq * sinth1 ** 2 - mS2) * costh3 ** 2)
+        g1 _  = - 0.5 * mHSM2 * costh1 ** 2 * sinth2 * costh2
+        g2 mH = - 0.5 * (mH * mH - mS2)
+                * sinth1 * (costh2 ** 2 - sinth2 ** 2) * sinth3 * costh3
+        g3 mH = 0.5 * ((mH * mH - mS2 * sinth1 ** 2) * sinth3 ** 2
+                       - (mH * mH * sinth1 ** 2 - mS2) * costh3 ** 2)
                   * sinth2 * costh2
-        g4 mHSq = - 0.25 * tan2b
-                  * ((mHSq - mS2) * costh2 * 2 * sinth3 * costh3
-                     - 2 * (mHSM2 - mHSq * costh3 ** 2
-                            - mS2 * sinth3 ** 2) * sinth1 * sinth2)
-                  * costh1
-        g mHSq = sum $ map ($ mHSq) [g1, g2, g3, g4]
+        g4 mH = - 0.25 * tan2b
+                * ((mH * mH - mS2) * costh2 * 2 * sinth3 * costh3
+                   - 2 * (mHSM2 - mH * mH * costh3 ** 2
+                          - mS2 * sinth3 ** 2) * sinth1 * sinth2) * costh1
+        g mH = sum $ map ($ mH) [g1, g2, g3, g4]
 
-        g1' _ = 0
-        g2' _ = - 0.5 * sinth1 * (costh2 ** 2 - sinth2 ** 2) * sinth3 * costh3
-        g3' _ = 0.5 * (sinth3 ** 2 - sinth1 ** 2 * costh3 ** 2) * sinth2 * costh2
-        g4' _ = - 0.25 * tan2b
-                  * (costh2 * 2 * sinth3 * costh3
-                     + 2 * costh3 ** 2 * sinth1 * sinth2) * costh1
+        g1' _  = 0
+        g2' mH = - mH * sinth1 * (costh2 ** 2 - sinth2 ** 2) * sinth3 * costh3
+        g3' mH = mH * (sinth3 ** 2 - sinth1 ** 2 * costh3 ** 2) * sinth2 * costh2
+        g4' mH = - tan2b * mH
+                 * (costh2 * sinth3 + costh3 * sinth1 * sinth2) * costh1 * costh3
 
         g' mHSq = sum $ map ($ mHSq) [g1', g2', g3', g4']
     in Rel g g'
@@ -96,17 +95,16 @@ getMH3 :: MixingAngles
        -> Maybe Mass
 getMH3 ang r signMu tanb =
     let eq = eqF ang r signMu tanb <> eqG ang tanb
-    in case newton eq 1.0 1.0e-6 of
-           Just mH3Sq -> if mH3Sq < 0  -- something went wrong!
-                         then Nothing
-                         else Just $ Mass (sqrt mH3Sq)
-           _          -> Nothing
+    in case newton eq 1000.0 1.0e-6 of
+           Just mH3 -> if mH3 < 0  -- something went wrong!
+                       then Nothing
+                       else Just $ Mass mH3
+           _        -> Nothing
 
 getMu :: MixingAngles -> Double -> Double -> TanBeta -> Mass -> Double
 getMu ang r signMu tanb (Mass mH3) =
     let Rel g _ = eqG ang tanb
-        !mH3Sq = mH3 * mH3
-        !muSq =  g mH3Sq / r
+        !muSq =  g mH3 / r
     in signMu * if muSq >= 0 then sqrt muSq else sqrt (- muSq)
 
 getLambda :: Double -> Double -> Double
