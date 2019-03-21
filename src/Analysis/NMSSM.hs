@@ -1,7 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE MultiWayIf   #-}
 
-module Analysis.NMSSM where
+module Analysis.NMSSM (searchNMSSM, renderSolution) where
 
 import Analysis.Data               (mHSM)
 import Analysis.EFT.SignalStrength

@@ -11,8 +11,8 @@ import           Analysis.NMSSM            (renderSolution, searchNMSSM)
 import           Analysis.Util             (mkTheta12)
 
 import           Control.Monad             (when)
-import           Control.Monad.Trans.State
-import           Data.ByteString.Builder
+import           Control.Monad.Trans.State (evalStateT, runStateT)
+import           Data.ByteString.Builder   (hPutBuilder)
 import           Data.ByteString.Char8     (ByteString)
 import qualified Data.ByteString.Char8     as B
 import           Data.Maybe                (fromMaybe)
@@ -34,11 +34,9 @@ main = do
 
     when (r < 0) $ die "The r value must be positive."
     when (signMu == 0) $ die "The sign of mu must be nonzero."
-
     putStrLn $ "-- Set r = " ++ show r ++ ", sign(mu) = " ++ show signMu
 
     (theta12, s) <- createSystemRandom >>= save >>= runStateT (mkTheta12 n)
-
     points <- evalStateT (V.mapM (searchNMSSM r signMu) theta12) s
     let solutions = V.map renderSolution points
     -- V.mapM_ print solutions
@@ -51,11 +49,11 @@ main = do
     putStrLn $ "-- " ++ outfile ++ " generated."
 
 data InputArgs w = InputArgs
-    { rvalue :: w ::: Double       <?> "r = lambda v / |mu|"
-    , musign :: w ::: Double       <?> "the sign of mu"
-    , np     :: w ::: Maybe Int    <?> "number of parameter points to try"
-    , output :: w ::: Maybe String <?> "name of the output file"
-    } deriving Generic
+     { rvalue :: w ::: Double       <?> "r = lambda v / |mu|"
+     , musign :: w ::: Double       <?> "the sign of mu"
+     , np     :: w ::: Maybe Int    <?> "number of parameter points to try"
+     , output :: w ::: Maybe String <?> "name of the output file"
+     } deriving Generic
 
 instance ParseRecord (InputArgs Wrapped)
 deriving instance Show (InputArgs Unwrapped)

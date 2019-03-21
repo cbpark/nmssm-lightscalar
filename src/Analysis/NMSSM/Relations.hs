@@ -24,16 +24,10 @@ instance Semigroup Rel where
         let sumrel     x = rel1     x + rel2     x
             sumdiffrel x = diffrel1 x + diffrel2 x
         in Rel sumrel sumdiffrel
-{-
-  lambda^2 v^2 = F(mH), lambda v mu = G(mH).
 
-  Define r = lambda v / |mu|, so lambda v = r |mu|. Then,
-
-  r^2 mu^2 = F(mH), sign(mu) r mu^2 = G(mH).
-
-  By combining them, - (sign(mu) / r) F(mH) + G(mH) = 0,
-  which can be used to obtain mH.
--}
+-- |
+-- From the first equation in (24) of
+-- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
 eqF :: MixingAngles -> Double -> Double -> TanBeta -> Rel
 eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
     let (!mZ2, !mS2, !mHSM2) = (massSq mZ, massSq mS, massSq mHSM)
@@ -58,6 +52,10 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
                                            - sinth1 * costh2 * costh3)
     in Rel f f'
 
+
+-- |
+-- From the second equation in (24) of
+-- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
 eqG :: MixingAngles -> TanBeta -> Rel
 eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
     let (!mS2, !mHSM2) = (massSq mS, massSq mHSM)
@@ -88,6 +86,16 @@ eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
         g' mHSq = sum $ map ($ mHSq) [g1', g2', g3', g4']
     in Rel g g'
 
+{-
+  lambda^2 v^2 = F(mH), lambda v mu = G(mH).
+
+  Define r = lambda v / |mu|, so lambda v = r |mu|. Then,
+
+  r^2 mu^2 = F(mH), sign(mu) r mu^2 = G(mH).
+
+  By combining them, - (sign(mu) / r) F(mH) + G(mH) = 0,
+  which can be used to obtain mH.
+-}
 getMH3 :: MixingAngles
        -> Double  -- ^ r = \lambda v / |\mu|
        -> Double  -- ^ sign(\mu)
