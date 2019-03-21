@@ -20,10 +20,11 @@ import System.Random.MWC           (Seed)
 searchNMSSM :: MonadIO m
             => Double          -- ^ r = \lambda v / |\mu|
             -> Double          -- ^ sign(\mu)
+            -> Double          -- ^ tan(\beta)
             -> (Angle, Angle)  -- ^ (theta_1, theta_2)
             -> StateT Seed m (Maybe NMSSMSolution)
-searchNMSSM r signMu (th1, th2) = do
-    (higgsResult, s) <- runState (searchHiggs r (th1, th2)) <$> get
+searchNMSSM r signMu tanbVal (th1, th2) = do
+    (higgsResult, s) <- runState (searchHiggs r tanbVal (th1, th2)) <$> get
 
     if isNothing higgsResult
        then return Nothing
@@ -64,26 +65,34 @@ searchNMSSM r signMu (th1, th2) = do
                                             , muCMSValue = muCMSVal
                                             , muLEPValue = muLEPVal }
 
-searchHiggs :: Double -> (Angle, Angle)
+searchHiggs :: Double -> Double -> (Angle, Angle)
             -> State Seed (Maybe (TanBeta, HiggsCoupling))
-searchHiggs r (th1, th2) = do
+searchHiggs r tanb (th1, th2) = do
+    s <- get
     let !mixingAngles = MixingAngles th1 th2 (Angle 0)
+        (result, s') = if tanb > 0  -- from the input of user
+                       then let tanb' = TanBeta tanb
+                                cH' = couplingH mixingAngles tanb' r
+                            in if satisfyHiggsData cH'
+                               then (Just (tanb', cH'), s)
+                               else (Nothing,           s)
+                       else searchHiggs' 10000 s
 
         searchHiggs' :: Int -> Seed -> (Maybe (TanBeta, HiggsCoupling), Seed)
         searchHiggs' !n s0 =
             let (tanbVal, s1) = genUniformValue (1.5, 10) s0
-                tanb = TanBeta tanbVal
-                !cH = couplingH mixingAngles tanb r
-            in if | (satisfyMuZZ13 2 . muVV) cH
-                    && (satisfyMuBB13 2 . muBB) cH
-                    && (satisfyMuGaGa13 2 . muGaGa) cH
-                              -> (Just (tanb, cH), s1)
-                  | n == 0    -> (Nothing, s1)
-                  | otherwise -> searchHiggs' (n - 1) s1
+                tanb' = TanBeta tanbVal
+                !cH = couplingH mixingAngles tanb' r
+            in if | satisfyHiggsData cH -> (Just (tanb', cH), s1)
+                  | n == 0              -> (Nothing, s1)
+                  | otherwise           -> searchHiggs' (n - 1) s1
 
-    (result, s) <- searchHiggs' 10000 <$> get
-    put s
+    put s'
     return result
+  where
+    satisfyHiggsData c = (satisfyMuZZ13 2 . muVV) c
+                          && (satisfyMuBB13 2 . muBB) c
+                          && (satisfyMuGaGa13 2 . muGaGa) c
 
 searchSinglet :: Double -> TanBeta -> (Angle, Angle)
               -> State Seed (Maybe (Angle, HiggsCoupling, Double, Double))

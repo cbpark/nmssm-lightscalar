@@ -31,17 +31,20 @@ main = do
     let r = rvalue input
         signMu = signum (musign input)
         n = fromMaybe 1000000 (np input)
+        tanb = fromMaybe (-1) (tanbeta input)
 
     when (r < 0) $ die "The r value must be positive."
     when (signMu == 0) $ die "The sign of mu must be nonzero."
     putStrLn $ "-- Set r = " ++ show r ++ ", sign(mu) = " ++ show signMu
 
     (theta12, s) <- createSystemRandom >>= save >>= runStateT (mkTheta12 n)
-    points <- evalStateT (V.mapM (searchNMSSM r signMu) theta12) s
+    points <- evalStateT (V.mapM (searchNMSSM r signMu tanb) theta12) s
     let solutions = V.map renderSolution points
     -- V.mapM_ print solutions
 
-    let outfile = fromMaybe ("output_" ++ show r ++ ".dat") (output input)
+    let outfile = fromMaybe ("output_r_" ++ show r ++
+                             (if tanb > 0 then "_tanb_" ++ show tanb else "")
+                             ++ ".dat") (output input)
     withBinaryFile outfile WriteMode $ \h -> do
         B.hPutStrLn h header
         V.mapM_ (hPutBuilder h) solutions
@@ -49,10 +52,11 @@ main = do
     putStrLn $ "-- " ++ outfile ++ " generated."
 
 data InputArgs w = InputArgs
-     { rvalue :: w ::: Double       <?> "r = lambda v / |mu|"
-     , musign :: w ::: Double       <?> "the sign of mu"
-     , np     :: w ::: Maybe Int    <?> "number of parameter points to try"
-     , output :: w ::: Maybe String <?> "name of the output file"
+     { rvalue  :: w ::: Double       <?> "r = lambda v / |mu|"
+     , musign  :: w ::: Double       <?> "the sign of mu"
+     , tanbeta :: w ::: Maybe Double <?> "tan(beta)"
+     , np      :: w ::: Maybe Int    <?> "number of parameter points to try"
+     , output  :: w ::: Maybe String <?> "name of the output file"
      } deriving Generic
 
 instance ParseRecord (InputArgs Wrapped)
