@@ -110,14 +110,14 @@ getMH3 ang r signMu tanb =
                        else Just $ Mass mH3
            _        -> Nothing
 
-getMu :: MixingAngles -> Double -> Double -> TanBeta -> Mass -> Double
+getMu :: MixingAngles -> Double -> Double -> TanBeta -> Mass -> Mass
 getMu ang r signMu tanb (Mass mH3) =
     let Rel g _ = eqG ang tanb
         !muSq =  g mH3 / r
-    in signMu * if muSq >= 0 then sqrt muSq else sqrt (- muSq)
+    in Mass $ signMu * if muSq >= 0 then sqrt muSq else sqrt (- muSq)
 
-getLambda :: Double -> Double -> Double
-getLambda r muVal = r * abs muVal / vEW
+getLambda :: Double -> Mass -> Double
+getLambda r (Mass muVal) = r * abs muVal / vEW
 
 -- |
 -- From the third equation in (24) of
@@ -126,7 +126,7 @@ getBigLambda :: MixingAngles
              -> Double  -- ^ \lambda
              -> TanBeta
              -> Mass    -- ^ m_H
-             -> Double
+             -> Mass
 getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) lam (TanBeta tanb) mH =
     let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
         !tanbSq = tanb * tanb
@@ -136,7 +136,7 @@ getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) lam (TanBeta tan
               * ((mH2 - mS2) * cos th2 * 2 * sin th3 * cos th3
                  - 2 * (mHSM2 - mH2 * cos th3 ** 2 - mS2 * sin th3 ** 2)
                  * sin th1 * sin th2) * cos th1
-    in rhs / (lam * vEW)
+    in Mass $ rhs / (lam * vEW)
 
 newton :: Rel
        -> Double  -- ^ initial guess

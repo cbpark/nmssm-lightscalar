@@ -10,7 +10,6 @@ import Analysis.NMSSM.Relations
 import Analysis.Type
 import Analysis.Util               (genUniformValue)
 
-
 import Control.Monad.IO.Class      (MonadIO (..))
 import Control.Monad.Trans.State
 import Data.ByteString.Builder     (Builder)
@@ -46,7 +45,7 @@ searchNMSSM r signMu tanbVal (th1, th2) = do
             else do
               let (mu', lambda', mH3', bigLambda') =
                       if isNothing singletResult
-                      then (0, 0, Mass 0, 0)
+                      then (Mass 0, 0, Mass 0, Mass 0)
                       else ( getMu mixingAngles r signMu tanb mH3'
                            , getLambda r mu'
                            , mH3
