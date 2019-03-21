@@ -34,7 +34,7 @@ executable searchnmssm
                      , double-conversion
                      , mwc-random
                      , optparse-generic
-                     , parallel
+                     -- , parallel
                      , transformers
                      , vector
 

@@ -7,8 +7,8 @@ module Analysis.Util
     , genNormalValue
     , mpiHalf2piHalf
     , sincos
-    , parVectorChunk
-    , catMaybes
+    -- , parVectorChunk
+    -- , catMaybes
     ) where
 
 import           Analysis.Type                   (Angle (..))
@@ -17,7 +17,7 @@ import           Analysis.Type                   (Angle (..))
 import           Control.Monad.IO.Class          (MonadIO)
 import           Control.Monad.ST                (runST)
 import           Control.Monad.Trans.State
-import           Control.Parallel.Strategies
+-- import           Control.Parallel.Strategies
 import           Data.Vector                     (Vector)
 import qualified Data.Vector                     as V
 import           System.Random.MWC
@@ -71,11 +71,11 @@ mpiHalf2piHalf th | cos th < 0 = asin (- (sin th))
 sincos :: Angle -> (Double, Double)
 sincos (Angle th) = let !sinth = sin th; !costh = cos th in (sinth, costh)
 
-parVectorChunk :: Int -> Strategy (Vector a)
-parVectorChunk n = fmap V.fromList . parListChunk n rseq . V.toList
+-- parVectorChunk :: Int -> Strategy (Vector a)
+-- parVectorChunk n = fmap V.fromList . parListChunk n rseq . V.toList
 
-catMaybes :: Vector (Maybe a) -> Vector a
-catMaybes = V.concatMap maybeToVector
-  where
-    maybeToVector Nothing  = V.empty
-    maybeToVector (Just x) = V.singleton x
+-- catMaybes :: Vector (Maybe a) -> Vector a
+-- catMaybes = V.concatMap maybeToVector
+--   where
+--     maybeToVector Nothing  = V.empty
+--     maybeToVector (Just x) = V.singleton x

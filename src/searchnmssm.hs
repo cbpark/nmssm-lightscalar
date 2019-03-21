@@ -7,25 +7,23 @@
 
 module Main where
 
-import           Analysis.NMSSM            (searchNMSSM)
--- import           Analysis.Type               (renderNMSSMSolution)
+import           Analysis.NMSSM            (renderSolution, searchNMSSM)
 import           Analysis.Util             (mkTheta12)
 
--- #if !(MIN_VERSION_base(4,11,0))
--- import           Data.Semigroup              ((<>))
--- #endif
--- import           Control.Parallel.Strategies (using)
--- import           Data.ByteString.Builder
--- import           Data.ByteString.Char8       (ByteString)
--- import qualified Data.ByteString.Char8       as B
 import           Control.Monad             (when)
+import           Control.Monad.Trans.State
+import           Data.ByteString.Builder
+import           Data.ByteString.Char8     (ByteString)
+import qualified Data.ByteString.Char8     as B
 import           Data.Maybe                (fromMaybe)
+-- #if !(MIN_VERSION_base(4,11,0))
+import           Data.Semigroup            ((<>))
+-- #endif
 import qualified Data.Vector               as V
 import           Options.Generic
--- import           System.IO                   (IOMode (..), withBinaryFile)
-import           Control.Monad.Trans.State
 import           System.Exit               (die)
-import           System.Random.MWC
+import           System.IO                 (IOMode (..), withBinaryFile)
+import           System.Random.MWC         (createSystemRandom, save)
 
 main :: IO ()
 main = do
@@ -39,23 +37,18 @@ main = do
 
     putStrLn $ "-- Set r = " ++ show r ++ ", sign(mu) = " ++ show signMu
 
-    s0 <- createSystemRandom >>= save
-    (theta12, s1) <- runStateT (mkTheta12 n) s0
+    (theta12, s) <- createSystemRandom >>= save >>= runStateT (mkTheta12 n)
 
-    solutions <- evalStateT (V.mapM (searchNMSSM r signMu) theta12) s1
-    V.mapM_ print solutions
+    points <- evalStateT (V.mapM (searchNMSSM r signMu) theta12) s
+    let solutions = V.map renderSolution points
+    -- V.mapM_ print solutions
 
-    -- theta12 <- mkTheta12 n
-    -- let solutons = V.map (renderNMSSMSolution . searchNMSSM r signMu) theta12
-    --                `using` parVectorChunk 200
+    let outfile = fromMaybe ("output_" ++ show r ++ ".dat") (output input)
+    withBinaryFile outfile WriteMode $ \h -> do
+        B.hPutStrLn h header
+        V.mapM_ (hPutBuilder h) solutions
 
-    -- let outfile = fromMaybe ("output_" ++ show r ++ ".dat") (output input)
-    -- withBinaryFile outfile WriteMode $ \h -> do
-    --     -- B.hPutStrLn h header
-    --     V.mapM_ (hPutBuilder h) solutions
-
-    -- putStrLn $ "-- " ++ outfile ++ " generated."
-    -- return undefined
+    putStrLn $ "-- " ++ outfile ++ " generated."
 
 data InputArgs w = InputArgs
     { rvalue :: w ::: Double       <?> "r = lambda v / |mu|"
@@ -67,12 +60,13 @@ data InputArgs w = InputArgs
 instance ParseRecord (InputArgs Wrapped)
 deriving instance Show (InputArgs Unwrapped)
 
--- header :: ByteString
--- header = "#" <> " lambda" <> "   tanb" <> "       mh3"
---          <> "        mu" <> "    Lambda"
---          <> "      Ct(h)" <> "      Cb(h)" <> "      CV(h)"
---          <> "      Cg(h)" <> "      Cga(h)"
---          <> "      Ct(s)" <> "      Cb(s)" <> "      CV(s)"
---          <> "      Cg(s)" <> "      Cga(s)"
---          <> "       theta1" <> "      theta2" <> "     theta3"
---          <> "     mu(CMS)" <> "     mu(LEP)"
+header :: ByteString
+header = B.pack $ "# " <>
+         foldl1 (\v1 v2 -> v1 <> ", " <> v2)
+         (zipWith (\n v -> "(" <> show n <> ") " <> v) ([1..] :: [Int])
+         [ "r", "lambda", "tanb", "mh3", "mu"
+         , "Ct(h)", "Cb(h)", "CV(h)", "Cg(h)", "Cga(h)"
+         , "Ct(s)", "Cb(s)", "CV(s)", "Cg(s)", "Cga(s)"
+         , "theta1", "theta2", "theta3"
+         , "mu(CMS)", "mu(LEP)"
+         ])

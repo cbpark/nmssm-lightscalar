@@ -10,8 +10,10 @@ import Analysis.NMSSM.Relations    (getLambda, getMH3, getMu)
 import Analysis.Type
 import Analysis.Util               (genUniformValue)
 
+
 import Control.Monad.IO.Class      (MonadIO (..))
 import Control.Monad.Trans.State
+import Data.ByteString.Builder     (Builder)
 import Data.Maybe                  (fromMaybe, isNothing)
 import System.Random.MWC           (Seed)
 
@@ -99,3 +101,7 @@ searchSinglet r tanb (th1, th2) = do
     (result, s) <- searchSinglet' 10000 <$> get
     put s
     return result
+
+renderSolution :: Maybe NMSSMSolution -> Builder
+renderSolution Nothing  = mempty
+renderSolution (Just s) = renderNMSSMSolution s
