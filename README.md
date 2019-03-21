@@ -6,14 +6,12 @@
 $ searchnmssm --help
 Scan the parameter space of the NMSSM
 
-Usage: searchnmssm --lambda DOUBLE --tanbeta DOUBLE [--mh3 DOUBLE] [--np INT]
-                   [--output STRING]
+Usage: searchnmssm --rvalue DOUBLE --musign DOUBLE [--np INT] [--output STRING]
 
 Available options:
   -h,--help                Show this help text
-  --lambda DOUBLE          lambda
-  --tanbeta DOUBLE         tan(beta)
-  --mh3 DOUBLE             heavy Higgs mass
+  --rvalue DOUBLE          r = lambda v / |mu|
+  --musign DOUBLE          the sign of mu
   --np INT                 number of parameter points to try
   --output STRING          name of the output file
 ```
