@@ -26,7 +26,7 @@ renderAngle (Angle th) = convDbl th
 newtype TanBeta = TanBeta Double deriving Show
 
 renderTanBeta :: TanBeta -> Builder
-renderTanBeta (TanBeta tanb) = (byteString . toFixed 3) tanb
+renderTanBeta (TanBeta tanb) = (byteString . toFixed 2) tanb
 
 data TreeLevelCouplings
     = TreeLevelCouplings { cTop    :: Double
@@ -94,14 +94,14 @@ renderNMSSMParameters NMSSMParameters {..} =
     (byteString . toFixed 2) lambda <> space
     <> renderTanBeta tanbeta <> space
     <> renderMass mh3 <> space
-    <> (byteString . toFixed 4) mu <> space
-    <> (byteString . toFixed 4) bigLambda
+    <> (byteString . toFixed 3) mu <> space
+    <> (byteString . toFixed 3) bigLambda
 renderNMSSMParameters NullNMSSMParameters  =
     (byteString . toFixed 2) 0 <> space
     <> renderTanBeta (TanBeta 0) <> space
     <> renderMass (Mass 0) <> space
-    <> (byteString . toFixed 4) 0 <> space
-    <> (byteString . toFixed 4) 0
+    <> (byteString . toFixed 3) 0 <> space
+    <> (byteString . toFixed 3) 0
 
 data NMSSMSolution = NMSSMSolution { rValue     :: Double
                                    , params     :: NMSSMParameters
@@ -123,7 +123,7 @@ renderNMSSMSolution NMSSMSolution {..} =
     <> charUtf8 '\n'
 
 convDbl :: Double -> Builder
-convDbl = byteString . toExponential 4
+convDbl = byteString . toExponential 3
 
 space :: Builder
 space = stringUtf8 "  "

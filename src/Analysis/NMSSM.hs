@@ -94,8 +94,7 @@ searchSinglet r tanb (th1, th2) = do
             let (th3Val, s1) = genUniformValue (-pi/2, pi/2) s0
                 th3' = Angle th3Val
                 !cS = couplingS (MixingAngles th1 th2 th3') tanb r
-                muCMSVal' = muCMS cS
-                muLEPVal' = muLEP cS
+                (muCMSVal', muLEPVal') = (,) <$> muCMS <*> muLEP $ cS
             in if | satisfyMuCMS 2 muCMSVal' && satisfyMuLEP 2 muLEPVal'
                               -> (Just (th3', cS, muCMSVal', muLEPVal'), s1)
                   | n == 0    -> (Nothing, s1)
