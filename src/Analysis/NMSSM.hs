@@ -6,7 +6,7 @@ module Analysis.NMSSM (searchNMSSM, renderSolution) where
 import Analysis.Data               (mHSM)
 import Analysis.EFT.SignalStrength
 import Analysis.NMSSM.Coupling     (couplingH, couplingS)
-import Analysis.NMSSM.Relations    (getLambda, getMH3, getMu)
+import Analysis.NMSSM.Relations
 import Analysis.Type
 import Analysis.Util               (genUniformValue)
 
@@ -43,15 +43,18 @@ searchNMSSM r signMu (th1, th2) = do
         if mH3 < mHSM
             then return Nothing  -- we consider only heavy Higgs
             else do
-              let (mu', lambda', mH3') = if isNothing singletResult
-                                         then (0, 0, Mass 0)
-                                         else ( getMu mixingAngles r signMu tanb mH3'
-                                              , getLambda r mu'
-                                              , mH3)
+              let (mu', lambda', mH3', bigLambda') =
+                      if isNothing singletResult
+                      then (0, 0, Mass 0, 0)
+                      else ( getMu mixingAngles r signMu tanb mH3'
+                           , getLambda r mu'
+                           , mH3
+                           , getBigLambda mixingAngles lambda' tanb mH3' )
                   nmssmParameters = NMSSMParameters { lambda  = lambda'
                                                     , tanbeta = tanb
                                                     , mh3     = mH3'
-                                                    , mu      = mu' }
+                                                    , mu      = mu'
+                                                    , bigLambda = bigLambda'}
               -- liftIO $ print nmssmParameters
               return . Just $ NMSSMSolution { rValue     = r
                                             , params     = nmssmParameters

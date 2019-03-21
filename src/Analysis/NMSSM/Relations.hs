@@ -7,6 +7,7 @@ module Analysis.NMSSM.Relations
       getMH3
     , getMu
     , getLambda
+    , getBigLambda
     ) where
 
 import Analysis.Data  (mHSM, mS, mZ, vEW)
@@ -117,6 +118,25 @@ getMu ang r signMu tanb (Mass mH3) =
 
 getLambda :: Double -> Double -> Double
 getLambda r muVal = r * abs muVal / vEW
+
+-- |
+-- From the third equation in (24) of
+-- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
+getBigLambda :: MixingAngles
+             -> Double  -- ^ \lambda
+             -> TanBeta
+             -> Mass    -- ^ m_H
+             -> Double
+getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) lam (TanBeta tanb) mH =
+    let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
+        !tanbSq = tanb * tanb
+        !cos2b = (1 - tanbSq) / (1 + tanbSq)
+
+        rhs = - 0.5 / cos2b
+              * ((mH2 - mS2) * cos th2 * 2 * sin th3 * cos th3
+                 - 2 * (mHSM2 - mH2 * cos th3 ** 2 - mS2 * sin th3 ** 2)
+                 * sin th1 * sin th2) * cos th1
+    in rhs / (lam * vEW)
 
 newton :: Rel
        -> Double  -- ^ initial guess

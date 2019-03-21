@@ -84,7 +84,8 @@ data NMSSMParameters
     = NMSSMParameters { lambda  :: Double
                       , tanbeta :: TanBeta
                       , mh3     :: Mass
-                      , mu      :: Double }
+                      , mu      :: Double
+                      , bigLambda :: Double }
     | NullNMSSMParameters
     deriving Show
 
@@ -93,11 +94,13 @@ renderNMSSMParameters NMSSMParameters {..} =
     (byteString . toFixed 2) lambda <> space
     <> renderTanBeta tanbeta <> space
     <> renderMass mh3 <> space
-    <> (byteString . toFixed 4) mu
+    <> (byteString . toFixed 4) mu <> space
+    <> (byteString . toFixed 4) bigLambda
 renderNMSSMParameters NullNMSSMParameters  =
     (byteString . toFixed 2) 0 <> space
     <> renderTanBeta (TanBeta 0) <> space
     <> renderMass (Mass 0) <> space
+    <> (byteString . toFixed 4) 0 <> space
     <> (byteString . toFixed 4) 0
 
 data NMSSMSolution = NMSSMSolution { rValue     :: Double
