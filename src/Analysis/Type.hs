@@ -80,26 +80,31 @@ renderMixingAngles MixingAngles {..} =
     <> renderAngle theta2 <> space
     <> renderAngle theta3
 
+newtype Lambda = Lambda Double deriving Show
+
+renderLambda :: Lambda -> Builder
+renderLambda (Lambda lambda) = (byteString . toFixed 2) lambda
+
 data NMSSMParameters
-    = NMSSMParameters { lambda    :: Double
+    = NMSSMParameters { lambda    :: Lambda
                       , tanbeta   :: TanBeta
-                      , mh3       :: Mass
                       , mu        :: Mass
                       , bigLambda :: Mass
+                      , mh3       :: Mass
                       , m0        :: Mass }
     | NullNMSSMParameters
     deriving Show
 
 renderNMSSMParameters :: NMSSMParameters -> Builder
 renderNMSSMParameters NMSSMParameters {..} =
-    (byteString . toFixed 2) lambda <> space
+    renderLambda lambda <> space
     <> renderTanBeta tanbeta <> space
-    <> renderMass mh3 <> space
     <> renderMass mu <> space
     <> renderMass bigLambda <> space
+    <> renderMass mh3 <> space
     <> renderMass m0
 renderNMSSMParameters NullNMSSMParameters  =
-    (byteString . toFixed 2) 0 <> space
+    renderLambda (Lambda 0) <> space
     <> renderTanBeta (TanBeta 0) <> space
     <> renderMass (Mass 0) <> space
     <> renderMass (Mass 0) <> space

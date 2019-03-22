@@ -117,18 +117,18 @@ getMu ang r signMu tanb (Mass mH3) =
         !muSq =  g mH3 / r
     in Mass $ signMu * if muSq >= 0 then sqrt muSq else sqrt (- muSq)
 
-getLambda :: Double -> Mass -> Double
-getLambda r (Mass muVal) = r * abs muVal / vEW
+getLambda :: Double -> Mass -> Lambda
+getLambda r (Mass muVal) = Lambda $ r * abs muVal / vEW
 
 -- |
 -- From the third equation in (24) of
 -- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
 getBigLambda :: MixingAngles
-             -> Double  -- ^ \lambda
+             -> Lambda
              -> TanBeta
              -> Mass    -- ^ m_H
              -> Mass
-getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) lam (TanBeta tanb) mH =
+getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) (Lambda lam) (TanBeta tanb) mH =
     let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
         !tanbSq = tanb * tanb
         !cos2b = (1 - tanbSq) / (1 + tanbSq)

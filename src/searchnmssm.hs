@@ -66,7 +66,7 @@ header :: ByteString
 header = B.pack $ "# " <>
          foldl1 (\v1 v2 -> v1 <> ", " <> v2)
          (zipWith (\n v -> "(" <> show n <> ") " <> v) ([1..] :: [Int])
-         [ "r", "lambda", "tanb", "mh3", "mu", "Lambda", "m0"
+         [ "r", "lambda", "tanb", "mu", "Lambda", "mh3", "m0"
          , "Ct(h)", "Cb(h)", "CV(h)", "Cg(h)", "Cga(h)"
          , "Ct(s)", "Cb(s)", "CV(s)", "Cg(s)", "Cga(s)"
          , "theta1", "theta2", "theta3"

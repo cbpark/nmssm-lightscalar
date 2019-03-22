@@ -43,19 +43,20 @@ searchNMSSM r signMu tanbVal (th1, th2) = do
         if mH3 < mHSM
             then return Nothing  -- we consider only heavy Higgs
             else do
-              let (mu', lambda', mH3', bigLambda', m0') =
-                      if isNothing singletResult
-                      then (Mass 0, 0, Mass 0, Mass 0, Mass 0)
-                      else ( getMu mixingAngles r signMu tanb mH3'
-                           , getLambda r mu'
-                           , mH3
-                           , getBigLambda mixingAngles lambda' tanb mH3'
-                           , fromMaybe (Mass 0) (getM0 mixingAngles tanb mH3'))
+              let (mu', lambda', mH3', bigLambda', m0')
+                      | isNothing singletResult =
+                            (Mass 0, Lambda 0, Mass 0, Mass 0, Mass 0)
+                      | otherwise =
+                            ( getMu mixingAngles r signMu tanb mH3'
+                            , getLambda r mu'
+                            , mH3
+                            , getBigLambda mixingAngles lambda' tanb mH3'
+                            , fromMaybe (Mass 0) (getM0 mixingAngles tanb mH3'))
                   nmssmParameters = NMSSMParameters { lambda    = lambda'
                                                     , tanbeta   = tanb
-                                                    , mh3       = mH3'
                                                     , mu        = mu'
                                                     , bigLambda = bigLambda'
+                                                    , mh3       = mH3'
                                                     , m0        = m0' }
               -- liftIO $ print nmssmParameters
               return . Just $ NMSSMSolution { rValue     = r
@@ -71,13 +72,13 @@ searchHiggs :: Double -> Double -> (Angle, Angle)
 searchHiggs r tanb (th1, th2) = do
     s <- get
     let !mixingAngles = MixingAngles th1 th2 (Angle 0)
-        (result, s') = if tanb > 0  -- from the input of user
-                       then let tanb' = TanBeta tanb
-                                cH' = couplingH mixingAngles tanb' r
-                            in if satisfyHiggsData cH'
-                               then (Just (tanb', cH'), s)
-                               else (Nothing,           s)
-                       else searchHiggs' 10000 s
+        (result, s') | tanb > 0 =
+                           let tanb' = TanBeta tanb  -- from the input of user
+                               cH' = couplingH mixingAngles tanb' r
+                           in if satisfyHiggsData cH'
+                              then (Just (tanb', cH'), s)
+                              else (Nothing,           s)
+                     | otherwise = searchHiggs' 10000 s
 
         searchHiggs' :: Int -> Seed -> (Maybe (TanBeta, HiggsCoupling), Seed)
         searchHiggs' !n s0 =
