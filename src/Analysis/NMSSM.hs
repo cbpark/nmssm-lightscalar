@@ -21,7 +21,7 @@ searchNMSSM :: MonadIO m
             -> Double  -- ^ tan(\beta)
             -> Int
             -> StateT Seed m (Maybe NMSSMSolution)
-searchNMSSM r signMu tanbVal n
+searchNMSSM r signMu tanbVal !n
     | n == 0    = return Nothing
     | otherwise = do
           ((th1, th2), s0) <- get >>= runStateT thetaPair
@@ -75,10 +75,10 @@ searchNMSSM r signMu tanbVal n
                                 , muLEPValue = 0 }
 
     mkParams muVal' tanb' mH3' ang =
-        let mu' = Mass muVal'
-            lambda' = getLambda r mu'
+        let mu'        = Mass muVal'
+            lambda'    = getLambda r mu'
             bigLambda' = getBigLambda ang lambda' tanb' mH3'
-            m0' = fromMaybe (Mass 0) (getM0 ang tanb' mH3')
+            m0'        = fromMaybe (Mass 0) (getM0 ang tanb' mH3')
         in NMSSMParameters { lambda    = lambda'
                            , tanbeta   = tanb'
                            , mu        = mu'
