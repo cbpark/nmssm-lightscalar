@@ -21,7 +21,7 @@ searchNMSSM :: MonadIO m
             -> Double  -- ^ tan(\beta)
             -> Int
             -> StateT Seed m (Maybe NMSSMSolution)
-searchNMSSM r signMu tanbVal !n
+searchNMSSM r signMu tanbVal n
     | n == 0    = return Nothing
     | otherwise = do
           ((th1, th2), s0) <- get >>= runStateT thetaPair
@@ -44,20 +44,16 @@ searchNMSSM r signMu tanbVal !n
                               Just mH3 -> do
                                   let Mass muVal =
                                           getMu mixingAngles r signMu tanb mH3
-
-                                  if abs muVal < 104.0  -- the LEP bound
-                                      then searchNMSSM r signMu tanbVal (n - 1)
-                                      else do
-                                        let nmssmParams =
-                                                mkParams muVal tanb mH3 mixingAngles
-                                        return . Just $ NMSSMSolution
-                                                        { rValue     = r
-                                                        , params     = nmssmParams
-                                                        , hCoupling  = cH
-                                                        , sCoupling  = cS
-                                                        , mixing     = mixingAngles
-                                                        , muCMSValue = muCMSVal
-                                                        , muLEPValue = muLEPVal }
+                                      nmssmParams =
+                                          mkParams muVal tanb mH3 mixingAngles
+                                  return . Just $ NMSSMSolution
+                                                  { rValue     = r
+                                                  , params     = nmssmParams
+                                                  , hCoupling  = cH
+                                                  , sCoupling  = cS
+                                                  , mixing     = mixingAngles
+                                                  , muCMSValue = muCMSVal
+                                                  , muLEPValue = muLEPVal }
   where
     nullResult (th1', th2') tanb' cH' =
         let nullParam = NMSSMParameters { lambda    = Lambda 0
@@ -100,7 +96,7 @@ searchHiggs r tanb (th1, th2) = do
                      | otherwise = searchHiggs' 10000 s
 
         searchHiggs' :: Int -> Seed -> (Maybe (TanBeta, HiggsCoupling), Seed)
-        searchHiggs' !n s0 =
+        searchHiggs' n s0 =
             let (tanbVal, s1) = genUniformValue (1.5, 15) s0
                 tanb' = TanBeta tanbVal
                 !cH = couplingH mixingAngles tanb' r
@@ -121,7 +117,7 @@ searchSinglet :: Double -> TanBeta -> (Angle, Angle) -> State Seed SingletResult
 searchSinglet r tanb (th1, th2) = do
     let searchSinglet' ::
             Int -> Seed -> (SingletResult, Seed)
-        searchSinglet' !n s0 =
+        searchSinglet' n s0 =
             let (th3Val, s1) = genUniformValue (-pi/2, pi/2) s0
                                -- genNormalValue (0.05, 0.1) s0
                 th3' = Angle th3Val
