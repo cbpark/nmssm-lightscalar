@@ -8,7 +8,7 @@ import Analysis.EFT.SignalStrength
 import Analysis.NMSSM.Coupling          (couplingH, couplingS)
 import Analysis.NMSSM.Relations
 import Analysis.Type
-import Analysis.Util                    (genUniformValue)
+import Analysis.Util                    (genNormalValue, genUniformValue)
 
 import Control.Monad.IO.Class           (MonadIO (..))
 import Control.Monad.Trans.State.Strict
@@ -102,7 +102,7 @@ searchSinglet r tanb (th1, th2) = do
     let searchSinglet' ::
             Int -> Seed -> (Maybe (Angle, HiggsCoupling, Double, Double), Seed)
         searchSinglet' !n s0 =
-            let (th3Val, s1) = genUniformValue (-pi/2, pi/2) s0
+            let (th3Val, s1) = genNormalValue (0.05, 0.1) s0 -- genUniformValue (-pi/2, pi/2) s0
                 th3' = Angle th3Val
                 !cS = couplingS (MixingAngles th1 th2 th3') tanb r
                 (muCMSVal', muLEPVal') = (,) <$> muCMS <*> muLEP $ cS
