@@ -8,6 +8,7 @@ module Analysis.NMSSM.Relations
     , getMu
     , getLambda
     , getBigLambda
+    , getM0
     ) where
 
 import Analysis.Data  (mHSM, mS, mZ, vEW)
@@ -152,3 +153,31 @@ newton Rel {..} guess epsilon = newton' 100 guess
                       in if err < epsilon
                          then Just guess1
                          else newton' (i - 1) guess1
+
+-- | From Eq. (8) of [arXiv:1407.0955](https://arxiv.org/abs/1407.0955).
+getM0 :: MixingAngles -> TanBeta -> Mass -> Maybe Mass
+getM0 ang (TanBeta tanb) mH =
+    let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
+        !tan2b = 2 * tanb / (1 - tanb * tanb)
+
+        !oHhVal = oHh ang
+        !oHHVal = oHH ang
+        !oshVal = osh ang
+        !osHVal = osH ang
+
+        m0Sq = mHSM2
+               + (mH2 - mHSM2) * oHhVal * (oHhVal + oHHVal * tan2b)
+               - (mHSM2 - mS2) * oshVal * (oshVal + osHVal * tan2b)
+    in if m0Sq < 0  -- why?
+       -- then Just $ Mass (-1.0)
+       then Nothing
+       else Just $ Mass (sqrt m0Sq)
+
+oHh, oHH, osh, osH :: MixingAngles -> Double
+oHh (MixingAngles (Angle th1) (Angle th2) (Angle th3)) =
+    cos th2 * cos th3 * sin th1 - sin th2 * sin th3
+oHH (MixingAngles (Angle th1) _           (Angle th3)) =
+    cos th1 * cos th3
+osh (MixingAngles (Angle th1) (Angle th2) (Angle th3)) =
+    cos th3 * sin th2 + cos th2 * sin th1 * sin th3
+osH = oHH

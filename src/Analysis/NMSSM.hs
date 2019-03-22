@@ -43,18 +43,20 @@ searchNMSSM r signMu tanbVal (th1, th2) = do
         if mH3 < mHSM
             then return Nothing  -- we consider only heavy Higgs
             else do
-              let (mu', lambda', mH3', bigLambda') =
+              let (mu', lambda', mH3', bigLambda', m0') =
                       if isNothing singletResult
-                      then (Mass 0, 0, Mass 0, Mass 0)
+                      then (Mass 0, 0, Mass 0, Mass 0, Mass 0)
                       else ( getMu mixingAngles r signMu tanb mH3'
                            , getLambda r mu'
                            , mH3
-                           , getBigLambda mixingAngles lambda' tanb mH3' )
-                  nmssmParameters = NMSSMParameters { lambda  = lambda'
-                                                    , tanbeta = tanb
-                                                    , mh3     = mH3'
-                                                    , mu      = mu'
-                                                    , bigLambda = bigLambda'}
+                           , getBigLambda mixingAngles lambda' tanb mH3'
+                           , fromMaybe (Mass 0) (getM0 mixingAngles tanb mH3'))
+                  nmssmParameters = NMSSMParameters { lambda    = lambda'
+                                                    , tanbeta   = tanb
+                                                    , mh3       = mH3'
+                                                    , mu        = mu'
+                                                    , bigLambda = bigLambda'
+                                                    , m0        = m0' }
               -- liftIO $ print nmssmParameters
               return . Just $ NMSSMSolution { rValue     = r
                                             , params     = nmssmParameters

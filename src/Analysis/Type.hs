@@ -85,7 +85,8 @@ data NMSSMParameters
                       , tanbeta   :: TanBeta
                       , mh3       :: Mass
                       , mu        :: Mass
-                      , bigLambda :: Mass }
+                      , bigLambda :: Mass
+                      , m0        :: Mass }
     | NullNMSSMParameters
     deriving Show
 
@@ -95,10 +96,12 @@ renderNMSSMParameters NMSSMParameters {..} =
     <> renderTanBeta tanbeta <> space
     <> renderMass mh3 <> space
     <> renderMass mu <> space
-    <> renderMass bigLambda
+    <> renderMass bigLambda <> space
+    <> renderMass m0
 renderNMSSMParameters NullNMSSMParameters  =
     (byteString . toFixed 2) 0 <> space
     <> renderTanBeta (TanBeta 0) <> space
+    <> renderMass (Mass 0) <> space
     <> renderMass (Mass 0) <> space
     <> renderMass (Mass 0) <> space
     <> renderMass (Mass 0)
