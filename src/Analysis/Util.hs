@@ -2,7 +2,8 @@
 
 module Analysis.Util
     (
-      mkTheta12
+      thetaPair
+    , thetaPairs
     , genUniformValue
     , genNormalValue
     , mpiHalf2piHalf
@@ -13,7 +14,7 @@ module Analysis.Util
 
 import           Analysis.Type                    (Angle (..))
 
--- import           Control.Monad                   (replicateM)
+import           Control.Monad                    (replicateM)
 import           Control.Monad.IO.Class           (MonadIO)
 import           Control.Monad.ST                 (runST)
 import           Control.Monad.Trans.State.Strict
@@ -23,8 +24,8 @@ import qualified Data.Vector                      as V
 import           System.Random.MWC
 import           System.Random.MWC.Distributions  (normal)
 
-mkTheta12 :: MonadIO m => Int -> StateT Seed m (Vector (Angle, Angle))
-mkTheta12 n = do
+thetaPairs :: MonadIO m => Int -> StateT Seed m (Vector (Angle, Angle))
+thetaPairs n = do
     (theta12s, s) <- get >>= runStateT (V.replicateM n thetaPair)
     put s
     return theta12s
@@ -37,16 +38,16 @@ thetaPair = do
   where
     genThetaPair s0 = runST $ do
         gen <- restore s0
-        -- [t1, t2] <- replicateM 2 (uniformR (-pi/2, pi/2) gen)
-        t1' <- normal 0    0.2 gen
-        t2' <- normal 0.15 0.2 gen
+        [t1, t2] <- replicateM 2 (uniformR (-pi/2, pi/2) gen)
+        -- t1' <- normal 0    0.2 gen
+        -- t2' <- normal 0.15 0.2 gen
         -- t2' <- uniformR (-pi/2, pi/2) gen
-        let (!t1, !t2) = (mpiHalf2piHalf t1', mpiHalf2piHalf t2')
+        -- let (!t1, !t2) = (mpiHalf2piHalf t1', mpiHalf2piHalf t2')
 
-        sign <- uniform gen
+        -- sign <- uniform gen
         s1 <- save gen
-        -- return (t1, t2, s1)
-        return $ if (sign :: Bool) then (t1, t2, s1) else (t1, -t2, s1)
+        return (t1, t2, s1)
+        -- return $ if (sign :: Bool) then (t1, t2, s1) else (t1, -t2, s1)
 
 genUniformValue :: (Double, Double) -> Seed -> (Double, Seed)
 genUniformValue (limit0, limit1) s = runST $ do

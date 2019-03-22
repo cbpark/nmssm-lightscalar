@@ -124,8 +124,8 @@ renderNMSSMSolution :: NMSSMSolution -> Builder
 renderNMSSMSolution NMSSMSolution {..} =
     (byteString . toFixed 1) rValue <> space
     <> renderNMSSMParameters params <> space
-    <> renderHiggsCoupling hCoupling <> space
-    <> renderHiggsCoupling sCoupling <> space
+    -- <> renderHiggsCoupling hCoupling <> space
+    -- <> renderHiggsCoupling sCoupling <> space
     <> renderMixingAngles mixing <> space
     <> convDbl muCMSValue <> space <> convDbl muLEPValue
     <> charUtf8 '\n'
