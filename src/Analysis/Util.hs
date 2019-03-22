@@ -11,17 +11,17 @@ module Analysis.Util
     -- , catMaybes
     ) where
 
-import           Analysis.Type                   (Angle (..))
+import           Analysis.Type                    (Angle (..))
 
 -- import           Control.Monad                   (replicateM)
-import           Control.Monad.IO.Class          (MonadIO)
-import           Control.Monad.ST                (runST)
-import           Control.Monad.Trans.State
+import           Control.Monad.IO.Class           (MonadIO)
+import           Control.Monad.ST                 (runST)
+import           Control.Monad.Trans.State.Strict
 -- import           Control.Parallel.Strategies
-import           Data.Vector                     (Vector)
-import qualified Data.Vector                     as V
+import           Data.Vector                      (Vector)
+import qualified Data.Vector                      as V
 import           System.Random.MWC
-import           System.Random.MWC.Distributions (normal)
+import           System.Random.MWC.Distributions  (normal)
 
 mkTheta12 :: MonadIO m => Int -> StateT Seed m (Vector (Angle, Angle))
 mkTheta12 n = do

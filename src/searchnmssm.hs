@@ -7,23 +7,23 @@
 
 module Main where
 
-import           Analysis.NMSSM            (renderSolution, searchNMSSM)
-import           Analysis.Util             (mkTheta12)
+import           Analysis.NMSSM                   (renderSolution, searchNMSSM)
+import           Analysis.Util                    (mkTheta12)
 
-import           Control.Monad             (when)
-import           Control.Monad.Trans.State (evalStateT, runStateT)
-import           Data.ByteString.Builder   (hPutBuilder)
-import           Data.ByteString.Char8     (ByteString)
-import qualified Data.ByteString.Char8     as B
-import           Data.Maybe                (fromMaybe)
+import           Control.Monad                    (when)
+import           Control.Monad.Trans.State.Strict (evalStateT, runStateT)
+import           Data.ByteString.Builder          (hPutBuilder)
+import           Data.ByteString.Char8            (ByteString)
+import qualified Data.ByteString.Char8            as B
+import           Data.Maybe                       (fromMaybe)
 -- #if !(MIN_VERSION_base(4,11,0))
-import           Data.Semigroup            ((<>))
+import           Data.Semigroup                   ((<>))
 -- #endif
-import qualified Data.Vector               as V
+import qualified Data.Vector                      as V
 import           Options.Generic
-import           System.Exit               (die)
-import           System.IO                 (IOMode (..), withBinaryFile)
-import           System.Random.MWC         (createSystemRandom, save)
+import           System.Exit                      (die)
+import           System.IO                        (IOMode (..), withBinaryFile)
+import           System.Random.MWC                (createSystemRandom, save)
 
 main :: IO ()
 main = do

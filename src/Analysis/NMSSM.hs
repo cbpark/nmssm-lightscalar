@@ -3,18 +3,18 @@
 
 module Analysis.NMSSM (searchNMSSM, renderSolution) where
 
-import Analysis.Data               (mHSM)
+import Analysis.Data                    (mHSM)
 import Analysis.EFT.SignalStrength
-import Analysis.NMSSM.Coupling     (couplingH, couplingS)
+import Analysis.NMSSM.Coupling          (couplingH, couplingS)
 import Analysis.NMSSM.Relations
 import Analysis.Type
-import Analysis.Util               (genUniformValue)
+import Analysis.Util                    (genUniformValue)
 
-import Control.Monad.IO.Class      (MonadIO (..))
-import Control.Monad.Trans.State
-import Data.ByteString.Builder     (Builder)
-import Data.Maybe                  (fromMaybe, isNothing)
-import System.Random.MWC           (Seed)
+import Control.Monad.IO.Class           (MonadIO (..))
+import Control.Monad.Trans.State.Strict
+import Data.ByteString.Builder          (Builder)
+import Data.Maybe                       (fromMaybe, isNothing)
+import System.Random.MWC                (Seed)
 
 searchNMSSM :: MonadIO m
             => Double          -- ^ r = \lambda v / |\mu|
