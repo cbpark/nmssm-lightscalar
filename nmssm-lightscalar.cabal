@@ -1,9 +1,10 @@
+cabal-version:       2.2
 name:                nmssm-lightscalar
 version:             0.2.0.0
 synopsis:            For studies on the light scalar in the NMSSM
 -- description:
 bug-reports:         https://github.com/cbpark/nmssm-lightscalar/issues
-license:             GPL-3
+license:             GPL-3.0-only
 license-file:        LICENSE
 author:              Chan Beom Park
 maintainer:          cbpark@gmail.com
@@ -11,30 +12,17 @@ copyright:           (c) 2019 Chan Beom Park
 category:            Physics
 build-type:          Simple
 extra-source-files:  README.md
-cabal-version:       >=1.10
 tested-with:         GHC == 8.6.4, GHC == 8.4.4, GHC == 8.2.2
 
 source-repository head
   type:                git
   location:            https://github.com/cbpark/nmssm-lightscalar
 
-executable searchnmssm
-  main-is:             searchnmssm.hs
-  other-modules:       Analysis.Data
-                       Analysis.LoopFuncs
-                       Analysis.Type
-                       Analysis.Util
-                       Analysis.EFT.Coupling
-                       Analysis.EFT.SignalStrength
-                       Analysis.NMSSM
-                       Analysis.NMSSM.Coupling
-                       Analysis.NMSSM.Relations
+common deps
   build-depends:       base >= 4.10 && < 5
                      , bytestring
-                     , double-conversion
                      , mwc-random
                      , optparse-generic
-                     -- , parallel
                      , transformers
                      , vector
 
@@ -43,6 +31,26 @@ executable searchnmssm
   else
     build-depends:     fail == 4.9.*, semigroups == 0.18.*
 
-  hs-source-dirs:      src
   default-language:    Haskell2010
-  ghc-options:         -Wall -O2 -funbox-strict-fields -threaded
+  ghc-options:         -Wall -O2 -funbox-strict-fields
+
+library
+  import:              deps
+  exposed-modules:     Analysis.Data
+                       Analysis.LoopFuncs
+                       Analysis.Type
+                       Analysis.Util
+                       Analysis.EFT.Coupling
+                       Analysis.EFT.SignalStrength
+                       Analysis.NMSSM
+                       Analysis.NMSSM.Coupling
+                       Analysis.NMSSM.Relations
+  build-depends:       double-conversion
+                     -- , parallel
+  hs-source-dirs:      lib
+
+executable searchnmssm
+  import:              deps
+  main-is:             searchnmssm.hs
+  build-depends:       nmssm-lightscalar
+  hs-source-dirs:      exe
