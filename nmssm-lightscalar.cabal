@@ -22,7 +22,6 @@ common deps
   build-depends:       base >= 4.10 && < 5
                      , bytestring
                      , mwc-random
-                     , optparse-generic
                      , transformers
                      , vector
 
@@ -33,6 +32,12 @@ common deps
 
   default-language:    Haskell2010
   ghc-options:         -Wall -O2 -funbox-strict-fields
+
+common exec
+  import:              deps
+  build-depends:       nmssm-lightscalar
+                     , optparse-generic
+  hs-source-dirs:      exe
 
 library
   import:              deps
@@ -50,7 +55,9 @@ library
   hs-source-dirs:      lib
 
 executable searchnmssm
-  import:              deps
+  import:              exec
   main-is:             searchnmssm.hs
-  build-depends:       nmssm-lightscalar
-  hs-source-dirs:      exe
+
+executable sinth1
+  import:              exec
+  main-is:             sinth1.hs
