@@ -33,7 +33,7 @@ main = do
 
     let points = V.map (getMuZZ (TanBeta tanb) th2) sinth1s
 
-    let outfile = fromMaybe
+        outfile = fromMaybe
                   ("sinth1_muZZ_tanb_" ++ show tanb ++ "_sinth2_"
                    ++ show sinth2Val ++ ".dat") (output input)
     withFile outfile WriteMode $ \h ->

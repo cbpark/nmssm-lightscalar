@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                #-}
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE FlexibleInstances  #-}
@@ -9,15 +10,15 @@ module Main where
 
 import           Analysis.NMSSM                   (renderSolution, searchNMSSM)
 
+#if !(MIN_VERSION_base(4,11,0))
+import           Data.Semigroup                   ((<>))
+#endif
 import           Control.Monad                    (when)
 import           Control.Monad.Trans.State.Strict (evalStateT)
 import           Data.ByteString.Builder          (hPutBuilder)
 import           Data.ByteString.Char8            (ByteString)
 import qualified Data.ByteString.Char8            as B
 import           Data.Maybe                       (fromMaybe)
--- #if !(MIN_VERSION_base(4,11,0))
-import           Data.Semigroup                   ((<>))
--- #endif
 import qualified Data.Vector                      as V
 import           Options.Generic
 import           System.Exit                      (die)
@@ -40,7 +41,7 @@ main = do
     points <- evalStateT (V.replicateM n (searchNMSSM r signMu tanb 10000)) s
     let solutions = V.map renderSolution points
 
-    let outfile = fromMaybe ("output_r_" ++ show r ++
+        outfile = fromMaybe ("output_r_" ++ show r ++
                              (if tanb > 0 then "_tanb_" ++ show tanb else "")
                              ++ ".dat") (output input)
     withBinaryFile outfile WriteMode $ \h -> do
