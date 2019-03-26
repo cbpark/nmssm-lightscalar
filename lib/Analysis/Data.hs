@@ -106,4 +106,4 @@ muZZATLAS = MuData 1.13 (-0.13) 0.13
 brRatioGaGaATLAS, brRatioTauTauATLAS, brRatioBBATLAS :: MuData
 brRatioGaGaATLAS   = MuData 0.87 (-0.12) 0.14
 brRatioTauTauATLAS = MuData 0.86 (-0.22) 0.26
-brRatioBBATLAS     = MuData 0.84 (-0.27) 0.38
+brRatioBBATLAS     = MuData 0.93 (-0.27) 0.38
