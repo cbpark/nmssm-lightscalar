@@ -14,7 +14,7 @@ module Analysis.Util
 
 import           Analysis.Type                    (Angle (..))
 
--- import           Control.Monad                    (replicateM)
+import           Control.Monad                    (replicateM)
 import           Control.Monad.IO.Class           (MonadIO)
 import           Control.Monad.ST                 (runST)
 import           Control.Monad.Trans.State.Strict
@@ -38,9 +38,9 @@ thetaPair = do
   where
     genThetaPair s0 = runST $ do
         gen <- restore s0
-        -- [t1, t2] <- replicateM 2 (uniformR (-pi/2, pi/2) gen)
-        t1 <- mpiHalf2piHalf <$> normal 0 0.2 gen
-        t2 <- uniformR (-pi/2, pi/2) gen
+        [t1, t2] <- replicateM 2 (uniformR (-pi/2, pi/2) gen)
+        -- t1 <- mpiHalf2piHalf <$> normal 0 0.2 gen
+        -- t2 <- uniformR (-pi/2, pi/2) gen
         -- t2 <- mpiHalf2piHalf <$> normal 0.15 0.2 gen
         -- t2 <- uniformR (-pi/2, pi/2) gen
         -- sign <- uniform gen

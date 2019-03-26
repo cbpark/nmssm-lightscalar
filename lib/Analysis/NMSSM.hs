@@ -107,9 +107,13 @@ searchHiggs r tanb (th1, th2) = do
     put s'
     return result
   where
-    satisfyHiggsData c = (satisfyMuZZ13 2 . muVV) c
-                          && (satisfyMuBB13 2 . muBB) c
-                          && (satisfyMuGaGa13 2 . muGaGa) c
+    -- satisfyHiggsData c = (satisfyMuZZ13 2 . muVV) c
+    --                       && (satisfyMuBB13 2 . muBB) c
+    --                       && (satisfyMuGaGa13 2 . muGaGa) c
+    satisfyHiggsData c = (   satisfyMuZZ          2 . muZZGGF      ) c
+                         && (satisfyBrRatioGaGa   2 . brRatioGaGa  ) c
+                         && (satisfyBrRatioTauTau 2 . brRatioTauTau) c
+                         && (satisfyBrRatioBB     2 . brRatioBB    ) c
 
 type SingletResult = Maybe (Angle, HiggsCoupling, Double, Double)
 

@@ -58,3 +58,26 @@ muLEP c@(HiggsCoupling t _) = (cv * cb) ** 2 / ctot2S c
   where
     cv = cVector t
     cb = cBottom t
+
+muZZGGF :: HiggsCoupling -> Double
+muZZGGF    NullHiggsCoupling  = 0
+muZZGGF c@(HiggsCoupling t l) =
+    (cGluon l / cGluon (loop couplingHSM)) ** 2 * cVector t ** 2 / ctot2
+  where ctot2 = cTotSq mHSM brHSM c
+
+satisfyMuZZ :: Double -> Double -> Bool
+satisfyMuZZ = satisfyMu muZZATLAS
+
+brRatioGaGa, brRatioTauTau, brRatioBB :: HiggsCoupling -> Double
+brRatioGaGa NullHiggsCoupling   = 0
+brRatioGaGa (HiggsCoupling t l) =
+    (cGamma l / cGamma (loop couplingHSM)) ** 2 / cVector t ** 2
+brRatioTauTau NullHiggsCoupling = 0
+brRatioTauTau (HiggsCoupling t _) = (cBottom t / cVector t) ** 2
+brRatioBB = brRatioTauTau
+
+satisfyBrRatioGaGa, satisfyBrRatioTauTau, satisfyBrRatioBB
+    :: Double -> Double -> Bool
+satisfyBrRatioGaGa   = satisfyMu brRatioGaGaATLAS
+satisfyBrRatioTauTau = satisfyMu brRatioTauTauATLAS
+satisfyBrRatioBB     = satisfyMu brRatioBBATLAS
