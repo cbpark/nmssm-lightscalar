@@ -122,7 +122,7 @@ data NMSSMSolution = NMSSMSolution { rValue     :: Double
 
 renderNMSSMSolution :: NMSSMSolution -> Builder
 renderNMSSMSolution NMSSMSolution {..} =
-    (byteString . toFixed 1) rValue <> space
+    (byteString . toFixed 2) rValue <> space
     <> renderNMSSMParameters params <> space
     -- <> renderHiggsCoupling hCoupling <> space
     -- <> renderHiggsCoupling sCoupling <> space
