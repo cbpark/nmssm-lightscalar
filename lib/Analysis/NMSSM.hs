@@ -3,6 +3,7 @@
 
 module Analysis.NMSSM (searchNMSSM, renderSolution) where
 
+import Analysis.EFT.Coupling            (correctSignYukawa)
 import Analysis.EFT.SignalStrength
 import Analysis.NMSSM.Coupling          (couplingH, couplingS)
 import Analysis.NMSSM.Relations
@@ -90,7 +91,7 @@ searchHiggs r tanb (th1, th2) = do
         (result, s') | tanb > 0 =
                            let tanb' = TanBeta tanb  -- from the user input
                                cH' = couplingH mixingAngles tanb' r
-                           in if satisfyHiggsData cH'
+                           in if correctSignYukawa cH' && satisfyHiggsData cH'
                               then (Just (tanb', cH'), s)
                               else (Nothing,           s)
                      | otherwise = searchHiggs' 10000 s

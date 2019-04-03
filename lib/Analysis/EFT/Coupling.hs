@@ -7,11 +7,16 @@ module Analysis.EFT.Coupling
     , couplingSM
     , couplingHSM
     , cTotSq
+    , correctSignYukawa
     ) where
 
 import Analysis.Data      (BR (..), mBottom, mHSM, mTop, mW)
 import Analysis.LoopFuncs (loopFuncFermion', loopFuncVector')
 import Analysis.Type
+
+correctSignYukawa :: HiggsCoupling -> Bool
+correctSignYukawa (HiggsCoupling t _) = cTop t >= 0 && cBottom t >= 0
+correctSignYukawa NullHiggsCoupling   = False
 
 cGlu :: Mass                -- ^ mass of the Higgs boson
      -> TreeLevelCouplings
