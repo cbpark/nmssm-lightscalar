@@ -88,15 +88,16 @@ searchHiggs :: Double -> Double -> (Angle, Angle)
 searchHiggs r tanb (th1, th2) = do
     s <- get
     let !mixingAngles = MixingAngles th1 th2 (Angle 0)
-        (result, s') | tanb > 0 =
-                           let tanb' = TanBeta tanb  -- from the user input
-                               cH' = couplingH mixingAngles tanb' r
-                               -- We will concern only correct-sign Yukawa coupling:
-                               -- see eqs. (17) and (18) in arXiv:1211.0875
-                           in if correctSignYukawa cH' && satisfyHiggsData cH'
-                              then (Just (tanb', cH'), s)
-                              else (Nothing,           s)
-                     | otherwise = searchHiggs' 10000 s
+        (result, s')
+            | tanb > 0 =
+                  let tanb' = TanBeta tanb  -- from the user input
+                      cH' = couplingH mixingAngles tanb' r
+                     -- We will consider only correct-sign Yukawa coupling:
+                     -- see eqs. (17) and (18) in arXiv:1211.0875
+                  in if correctSignYukawa cH' && satisfyHiggsData cH'
+                     then (Just (tanb', cH'), s)
+                     else (Nothing,           s)  -- nothing!
+            | otherwise = searchHiggs' 10000 s    -- better fix tanb ..
 
         searchHiggs' :: Int -> Seed -> (Maybe (TanBeta, HiggsCoupling), Seed)
         searchHiggs' n s0 =
