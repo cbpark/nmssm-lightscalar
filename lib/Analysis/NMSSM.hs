@@ -91,6 +91,8 @@ searchHiggs r tanb (th1, th2) = do
         (result, s') | tanb > 0 =
                            let tanb' = TanBeta tanb  -- from the user input
                                cH' = couplingH mixingAngles tanb' r
+                               -- We will concern only correct-sign Yukawa coupling:
+                               -- see eqs. (17) and (18) in arXiv:1211.0875
                            in if correctSignYukawa cH' && satisfyHiggsData cH'
                               then (Just (tanb', cH'), s)
                               else (Nothing,           s)
