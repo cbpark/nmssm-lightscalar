@@ -83,7 +83,7 @@ renderMixingAngles MixingAngles {..} =
 newtype Lambda = Lambda Double deriving Show
 
 renderLambda :: Lambda -> Builder
-renderLambda (Lambda lambda) = (byteString . toFixed 2) lambda
+renderLambda (Lambda lambda) = (byteString . toFixed 3) lambda
 
 data NMSSMParameters
     = NMSSMParameters { lambda    :: Lambda
