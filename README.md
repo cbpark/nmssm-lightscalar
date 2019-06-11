@@ -1,5 +1,7 @@
 # nmssm-lightscalar
 
+Codes used for analyses in [arXiv:1906.03389](https://arxiv.org/abs/1906.03389).
+
 ## Usage
 
 ```
