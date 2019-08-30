@@ -85,9 +85,15 @@ newtype Lambda = Lambda Double deriving Show
 renderLambda :: Lambda -> Builder
 renderLambda (Lambda lambda) = (byteString . toFixed 3) lambda
 
+newtype Epsilon = Epsilon Double deriving Show
+
+renderEpsilon :: Epsilon -> Builder
+renderEpsilon (Epsilon eps) = (byteString . toFixed 2) eps
+
 data NMSSMParameters
     = NMSSMParameters { lambda    :: Lambda
                       , tanbeta   :: TanBeta
+                      , epsilon   :: Epsilon
                       , mu        :: Mass
                       , bigLambda :: Mass
                       , mh3       :: Mass
@@ -99,6 +105,7 @@ renderNMSSMParameters :: NMSSMParameters -> Builder
 renderNMSSMParameters NMSSMParameters {..} =
     renderLambda lambda <> space
     <> renderTanBeta tanbeta <> space
+    <> renderEpsilon epsilon <> space
     <> renderMass mu <> space
     <> renderMass bigLambda <> space
     <> renderMass mh3 <> space

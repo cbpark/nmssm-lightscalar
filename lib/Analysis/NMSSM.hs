@@ -20,16 +20,17 @@ searchNMSSM :: MonadIO m
             => Double  -- ^ r = \lambda v / |\mu|
             -> Double  -- ^ sign(\mu)
             -> Double  -- ^ tan(\beta)
+            -> Double  -- ^ epsilon
             -> Int
             -> StateT Seed m (Maybe NMSSMSolution)
-searchNMSSM r signMu tanbVal n
+searchNMSSM r signMu tanbVal eps n
     | n == 0    = return Nothing
     | otherwise = do
           ((th1, th2), s0) <- get >>= runStateT thetaPair
           let (higgsResult, s1) = runState (searchHiggs r tanbVal (th1, th2)) s0
 
           case higgsResult of  -- satisfy the Higgs data?
-              Nothing -> put s1 >> searchNMSSM r signMu tanbVal (n - 1)
+              Nothing -> put s1 >> searchNMSSM r signMu tanbVal eps (n - 1)
               Just (tanb, cH) -> do
                   let (singletResult, s2) =
                           runState (searchSinglet r tanb (th1, th2)) s1
@@ -59,6 +60,7 @@ searchNMSSM r signMu tanbVal n
     nullResult (th1', th2') tanb' cH' =
         let nullParam = NMSSMParameters { lambda    = Lambda 0
                                         , tanbeta   = tanb'
+                                        , epsilon   = Epsilon eps
                                         , mu        = Mass 0
                                         , bigLambda = Mass 0
                                         , mh3       = Mass 0
@@ -78,6 +80,7 @@ searchNMSSM r signMu tanbVal n
             m0'        = fromMaybe (Mass 0) (getM0 ang tanb' mH3')
         in NMSSMParameters { lambda    = lambda'
                            , tanbeta   = tanb'
+                           , epsilon   = Epsilon eps
                            , mu        = mu'
                            , bigLambda = bigLambda'
                            , mh3       = mH3'

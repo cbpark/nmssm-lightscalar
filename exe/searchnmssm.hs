@@ -32,13 +32,14 @@ main = do
         signMu = signum (musign input)
         n = fromMaybe 10000 (np input)
         tanb = fromMaybe (-1) (tanbeta input)
+        eps = fromMaybe 0 (epsilon input)
 
     when (r < 0) $ die "The r value must be positive."
     when (signMu == 0) $ die "The sign of mu must be nonzero."
     putStrLn $ "-- Set r = " ++ show r ++ ", sign(mu) = " ++ show signMu
 
     s <- createSystemRandom >>= save
-    points <- evalStateT (V.replicateM n (searchNMSSM r signMu tanb 10000)) s
+    points <- evalStateT (V.replicateM n (searchNMSSM r signMu tanb eps 10000)) s
     let solutions = V.map renderSolution points
 
         outfile = fromMaybe ("output_r_" ++ show r ++
@@ -54,6 +55,7 @@ data InputArgs w = InputArgs
      { rvalue  :: w ::: Double       <?> "r = lambda v / |mu|"
      , musign  :: w ::: Double       <?> "the sign of mu"
      , tanbeta :: w ::: Maybe Double <?> "tan(beta)"
+     , epsilon :: w ::: Maybe Double <?> "epsilon"
      , np      :: w ::: Maybe Int    <?> "number of parameter points"
      , output  :: w ::: Maybe String <?> "name of the output file"
      } deriving Generic
@@ -65,7 +67,7 @@ header :: ByteString
 header = B.pack $ "# " <>
          foldl1 (\v1 v2 -> v1 <> ", " <> v2)
          (zipWith (\n v -> "(" <> show n <> ") " <> v) ([1..] :: [Int])
-         [ "r", "lambda", "tanb", "mu", "Lambda", "mh3", "m0"
+         [ "r", "lambda", "tanb", "epsilon", "mu", "Lambda", "mh3", "m0"
          -- , "Ct(h)", "Cb(h)", "CV(h)", "Cg(h)", "Cga(h)"
          -- , "Ct(s)", "Cb(s)", "CV(s)", "Cg(s)", "Cga(s)"
          , "theta1", "theta2", "theta3"

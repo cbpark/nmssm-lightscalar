@@ -3,7 +3,7 @@
 }:
 mkDerivation {
   pname = "nmssm-lightscalar";
-  version = "0.2.0.0";
+  version = "dev";
   src = ./.;
   isLibrary = true;
   isExecutable = true;

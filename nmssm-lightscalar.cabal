@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                nmssm-lightscalar
-version:             0.2.0.0
+version:             0.2.0.999
 synopsis:            For studies on the light scalar in the NMSSM
 -- description:
 bug-reports:         https://github.com/cbpark/nmssm-lightscalar/issues
@@ -12,7 +12,7 @@ copyright:           (c) 2019 Chan Beom Park
 category:            Physics
 build-type:          Simple
 extra-source-files:  README.md
-tested-with:         GHC == 8.6.5, GHC == 8.6.4, GHC == 8.4.4, GHC == 8.2.2
+tested-with:         GHC == 8.6.5, GHC == 8.4.4, GHC == 8.2.2
 
 source-repository head
   type:                git
