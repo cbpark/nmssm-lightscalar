@@ -11,7 +11,7 @@ module Analysis.NMSSM.Relations
     , getM0
     ) where
 
-import Analysis.Data  (mHSM, mS, mZ, vEW)
+import Analysis.Data  (mHSM, mS, mZ, vEW, vEW2)
 import Analysis.Type
 import Analysis.Util  (sincos)
 
@@ -155,8 +155,8 @@ newton Rel {..} guess epsilon = newton' 100 guess
                          else newton' (i - 1) guess1
 
 -- | From Eq. (8) of [arXiv:1407.0955](https://arxiv.org/abs/1407.0955).
-getM0 :: MixingAngles -> TanBeta -> Mass -> Maybe Mass
-getM0 ang (TanBeta tanb) mH =
+getM0 :: MixingAngles -> TanBeta -> Epsilon -> Mass -> Maybe Mass
+getM0 ang (TanBeta tanb) (Epsilon eps) mH =
     let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
         !tan2b = 2 * tanb / (1 - tanb * tanb)
 
@@ -168,6 +168,7 @@ getM0 ang (TanBeta tanb) mH =
         m0Sq = mHSM2
                + (mH2 - mHSM2) * oHhVal * (oHhVal + oHHVal * tan2b)
                - (mHSM2 - mS2) * oshVal * (oshVal + osHVal * tan2b)
+               + eps * vEW2 * tan2b / tanb
     in if m0Sq < 0  -- why?
        -- then Just $ Mass (-1.0)
        then Nothing

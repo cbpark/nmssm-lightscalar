@@ -15,6 +15,9 @@ mS   = Mass 96.0
 vEW :: Double
 vEW = 174.10358473791823
 
+vEW2 :: Double
+vEW2 = vEW * vEW
+
 data BR = BR { bb     :: Double
              , cc     :: Double
              , tautau :: Double

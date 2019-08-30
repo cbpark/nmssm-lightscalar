@@ -77,10 +77,11 @@ searchNMSSM r signMu tanbVal eps n
         let mu'        = Mass muVal'
             lambda'    = getLambda r mu'
             bigLambda' = getBigLambda ang lambda' tanb' mH3'
-            m0'        = fromMaybe (Mass 0) (getM0 ang tanb' mH3')
+            eps'       = Epsilon eps
+            m0'        = fromMaybe (Mass 0) (getM0 ang tanb' eps' mH3')
         in NMSSMParameters { lambda    = lambda'
                            , tanbeta   = tanb'
-                           , epsilon   = Epsilon eps
+                           , epsilon   = eps'
                            , mu        = mu'
                            , bigLambda = bigLambda'
                            , mh3       = mH3'
