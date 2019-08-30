@@ -23,31 +23,32 @@ searchNMSSM :: MonadIO m
             -> Double  -- ^ epsilon
             -> Int
             -> StateT Seed m (Maybe NMSSMSolution)
-searchNMSSM r signMu tanbVal eps n
+searchNMSSM r signMu tanbVal epsVal n
     | n == 0    = return Nothing
     | otherwise = do
           ((th1, th2), s0) <- get >>= runStateT thetaPair
           let (higgsResult, s1) = runState (searchHiggs r tanbVal (th1, th2)) s0
+              eps = Epsilon epsVal
 
           case higgsResult of  -- satisfy the Higgs data?
-              Nothing -> put s1 >> searchNMSSM r signMu tanbVal eps (n - 1)
+              Nothing -> put s1 >> searchNMSSM r signMu tanbVal epsVal (n - 1)
               Just (tanb, cH) -> do
                   let (singletResult, s2) =
                           runState (searchSinglet r tanb (th1, th2)) s1
                   put s2
 
                   case singletResult of  -- satisfy the CMS and LEP excesses?
-                      Nothing -> return $ nullResult (th1, th2) tanb cH
+                      Nothing -> return $ nullResult (th1, th2) tanb eps cH
                       Just (th3, cS, muCMSVal, muLEPVal) -> do
                           let mixingAngles = MixingAngles th1 th2 th3
 
-                          case getMH3 mixingAngles r signMu tanb of  -- mH3 is found?
-                              Nothing -> return $ nullResult (th1, th2) tanb cH
+                          case getMH3 mixingAngles r signMu tanb eps of  -- mH3 is found?
+                              Nothing -> return $ nullResult (th1, th2) tanb eps cH
                               Just mH3 -> do
                                   let Mass muVal =
                                           getMu mixingAngles r signMu tanb mH3
                                       nmssmParams =
-                                          mkParams muVal tanb mH3 mixingAngles
+                                          mkParams muVal tanb eps mH3 mixingAngles
                                   return . Just $ NMSSMSolution
                                                   { rValue     = r
                                                   , params     = nmssmParams
@@ -57,10 +58,10 @@ searchNMSSM r signMu tanbVal eps n
                                                   , muCMSValue = muCMSVal
                                                   , muLEPValue = muLEPVal }
   where
-    nullResult (th1', th2') tanb' cH' =
+    nullResult (th1', th2') tanb' eps' cH' =
         let nullParam = NMSSMParameters { lambda    = Lambda 0
                                         , tanbeta   = tanb'
-                                        , epsilon   = Epsilon eps
+                                        , epsilon   = eps'
                                         , mu        = Mass 0
                                         , bigLambda = Mass 0
                                         , mh3       = Mass 0
@@ -73,11 +74,10 @@ searchNMSSM r signMu tanbVal eps n
                                 , muCMSValue = 0
                                 , muLEPValue = 0 }
 
-    mkParams muVal' tanb' mH3' ang =
+    mkParams muVal' tanb' eps' mH3' ang =
         let mu'        = Mass muVal'
             lambda'    = getLambda r mu'
             bigLambda' = getBigLambda ang lambda' tanb' mH3'
-            eps'       = Epsilon eps
             m0'        = fromMaybe (Mass 0) (getM0 ang tanb' eps' mH3')
         in NMSSMParameters { lambda    = lambda'
                            , tanbeta   = tanb'

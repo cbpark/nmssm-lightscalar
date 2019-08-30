@@ -30,8 +30,8 @@ instance Semigroup Rel where
 -- |
 -- From the first equation in (24) of
 -- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
-eqF :: MixingAngles -> Double -> Double -> TanBeta -> Rel
-eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
+eqF :: MixingAngles -> Double -> Double -> TanBeta -> Epsilon -> Rel
+eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
     let (!mZ2, !mS2, !mHSM2) = (massSq mZ, massSq mS, massSq mHSM)
         (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
@@ -41,6 +41,7 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
         !sin2b = 2 * tanb / (1 + tanbSq)
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
         !coeff = costh1 / (2 * sin2b * cos2b)
+        !epsTerm = - 2 * eps * vEW2 / tanb / (2 * sin2b * cos2b)
 
         f mH = let !mHSq = mH * mH
                in (/ (-r)) . (* signMu) $
@@ -48,6 +49,7 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) =
                                  + 2 * sinth1 * costh2
                                     * (mHSM2
                                        - costh3 ** 2 * mHSq - sinth3 ** 2 * mS2))
+                  + epsTerm
 
         f' mH = (/ (-r)) . (* signMu) $
                 4 * coeff * mH * costh3 * (sinth2 * sinth3
@@ -102,9 +104,10 @@ getMH3 :: MixingAngles
        -> Double  -- ^ r = \lambda v / |\mu|
        -> Double  -- ^ sign(\mu)
        -> TanBeta
+       -> Epsilon
        -> Maybe Mass
-getMH3 ang r signMu tanb =
-    let eq = eqF ang r signMu tanb <> eqG ang tanb
+getMH3 ang r signMu tanb eps =
+    let eq = eqF ang r signMu tanb eps <> eqG ang tanb
     in case newton eq 1000.0 1.0e-6 of
            Just mH3 -> if mH3 < 0  -- something went wrong!
                        then Nothing
