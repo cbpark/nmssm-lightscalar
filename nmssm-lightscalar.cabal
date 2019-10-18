@@ -61,3 +61,7 @@ executable searchnmssm
 executable sinth1
   import:              exec
   main-is:             sinth1.hs
+
+executable epsilon_t
+  import:              exec
+  main-is:             epsilon_t.hs
