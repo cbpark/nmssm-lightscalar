@@ -1,6 +1,6 @@
 module Analysis.Data where
 
-import Analysis.Type (Mass (..))
+import Analysis.Type (Mass (..), massSq)
 
 mTop, mBottom, mW, mZ :: Mass
 mTop    = Mass 173.0
@@ -12,10 +12,13 @@ mHSM, mS :: Mass
 mHSM = Mass 125.0
 mS   = Mass 96.0
 
-vEW :: Double
-vEW = 174.10358473791823
+mZ2, mHSM2, mS2 :: Double
+mZ2   = massSq mZ
+mHSM2 = massSq mHSM
+mS2   = massSq mS
 
-vEW2 :: Double
+vEW, vEW2 :: Double
+vEW  = 174.10358473791823
 vEW2 = vEW * vEW
 
 data BR = BR { bb     :: Double

@@ -11,7 +11,7 @@ module Analysis.NMSSM.Relations
     , getM0
     ) where
 
-import Analysis.Data  (mHSM, mS, mZ, vEW, vEW2)
+import Analysis.Data  (mHSM2, mS2, mZ2, vEW, vEW2)
 import Analysis.Type
 import Analysis.Util  (sincos)
 
@@ -32,8 +32,7 @@ instance Semigroup Rel where
 -- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
 eqF :: MixingAngles -> Double -> Double -> TanBeta -> Epsilon -> Rel
 eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
-    let (!mZ2, !mS2, !mHSM2) = (massSq mZ, massSq mS, massSq mHSM)
-        (sinth1, costh1) = sincos th1
+    let (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
         (sinth3, costh3) = sincos th3
 
@@ -62,8 +61,7 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
 -- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
 eqG :: MixingAngles -> TanBeta -> Rel
 eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
-    let (!mS2, !mHSM2) = (massSq mS, massSq mHSM)
-        (sinth1, costh1) = sincos th1
+    let (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
         (sinth3, costh3) = sincos th3
 
@@ -132,7 +130,7 @@ getBigLambda :: MixingAngles
              -> Mass    -- ^ m_H
              -> Mass
 getBigLambda (MixingAngles (Angle th1) (Angle th2) (Angle th3)) (Lambda lam) (TanBeta tanb) mH =
-    let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
+    let mH2 = massSq mH
         !tanbSq = tanb * tanb
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
 
@@ -160,7 +158,7 @@ newton Rel {..} guess epsilon = newton' 100 guess
 -- | From Eq. (8) of [arXiv:1407.0955](https://arxiv.org/abs/1407.0955).
 getM0 :: MixingAngles -> TanBeta -> Epsilon -> Mass -> Maybe Mass
 getM0 ang (TanBeta tanb) (Epsilon eps) mH =
-    let (!mS2, !mHSM2, !mH2) = (massSq mS, massSq mHSM, massSq mH)
+    let mH2 = massSq mH
         !tan2b = 2 * tanb / (1 - tanb * tanb)
 
         !oHhVal = oHh ang
