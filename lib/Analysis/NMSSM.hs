@@ -13,7 +13,6 @@ import Analysis.Util                    (genUniformValue, thetaPair)
 import Control.Monad.IO.Class           (MonadIO (..))
 import Control.Monad.Trans.State.Strict
 import Data.ByteString.Builder          (Builder)
-import Data.Maybe                       (fromMaybe)
 import System.Random.MWC                (Seed)
 
 searchNMSSM :: MonadIO m
@@ -42,13 +41,13 @@ searchNMSSM r signMu tanbVal epsVal n
                       Just (th3, cS, muCMSVal, muLEPVal) -> do
                           let mixingAngles = MixingAngles th1 th2 th3
 
-                          case getMH3 mixingAngles r signMu tanb eps of  -- mH3 is found?
+                          case getMH3M0 mixingAngles r signMu tanb eps of  -- mH3 is found?
                               Nothing -> return $ nullResult (th1, th2) tanb eps cH
-                              Just mH3 -> do
+                              Just (mH3, m0Val) -> do
                                   let Mass muVal =
                                           getMu mixingAngles r signMu tanb mH3
                                       nmssmParams =
-                                          mkParams muVal tanb eps mH3 mixingAngles
+                                          mkParams muVal tanb eps mH3 m0Val mixingAngles
                                   return . Just $ NMSSMSolution
                                                   { rValue     = r
                                                   , params     = nmssmParams
@@ -74,11 +73,10 @@ searchNMSSM r signMu tanbVal epsVal n
                                 , muCMSValue = 0
                                 , muLEPValue = 0 }
 
-    mkParams muVal' tanb' eps' mH3' ang =
+    mkParams muVal' tanb' eps' mH3' m0' ang =
         let mu'        = Mass muVal'
             lambda'    = getLambda r mu'
             bigLambda' = getBigLambda ang lambda' tanb' mH3'
-            m0'        = fromMaybe (Mass 0) (getM0 ang tanb' eps' mH3')
         in NMSSMParameters { lambda    = lambda'
                            , tanbeta   = tanb'
                            , epsilon   = eps'

@@ -4,17 +4,17 @@
 
 module Analysis.NMSSM.Relations
     (
-      getMH3
+      getMH3M0
     , getMu
     , getLambda
     , getBigLambda
-    , getM0
     ) where
 
 import Analysis.Data  (mHSM2, mS2, mZ2, vEW, vEW2)
 import Analysis.Type
 import Analysis.Util  (sincos)
 
+import Control.Monad  (guard)
 #if !(MIN_VERSION_base(4,11,0))
 import Data.Semigroup (Semigroup (..))
 #endif
@@ -30,8 +30,11 @@ instance Semigroup Rel where
 -- |
 -- From the first equation in (24) of
 -- [arXiv:1211.0875](https://arxiv.org/abs/1211.0875).
-eqF :: MixingAngles -> Double -> Double -> TanBeta -> Epsilon -> Rel
-eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
+eqF :: MixingAngles -> Double -> Double -> TanBeta -> Epsilon
+    -> Rel  -- ^ equations for m_0(m_H)
+    -> Rel
+eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb)
+    (Epsilon eps) (Rel m0Sq m0Sq') =
     let (sinth1, costh1) = sincos th1
         (sinth2, costh2) = sincos th2
         (sinth3, costh3) = sincos th3
@@ -39,8 +42,14 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
         !tanbSq = tanb * tanb
         !sin2b = 2 * tanb / (1 + tanbSq)
         !cos2b = (1 - tanbSq) / (1 + tanbSq)
-        !coeff = costh1 / (2 * sin2b * cos2b)
-        !epsTerm = - 2 * eps * vEW2 / tanb / (2 * sin2b * cos2b)
+        !sin4b = 2 * sin2b * cos2b
+        !coeff = costh1 / sin4b
+
+        -- \\Delta m_{12}^2 = - (m_0^2 - m_Z^2) / tan(beta) + \\epsilon v^2,
+        -- where m_0^2 is a function of m_H.
+        delM12  mH = - (m0Sq mH - mZ2) / tanb + eps * vEW2
+        delM12' mH = - m0Sq' mH / tanb
+        !coeffM12 = 2 / sin4b
 
         f mH = let !mHSq = mH * mH
                in (/ (-r)) . (* signMu) $
@@ -48,13 +57,13 @@ eqF (MixingAngles th1 th2 th3) r signMu (TanBeta tanb) (Epsilon eps) =
                                  + 2 * sinth1 * costh2
                                     * (mHSM2
                                        - costh3 ** 2 * mHSq - sinth3 ** 2 * mS2))
-                  + epsTerm
+                  + coeffM12 * delM12 mH  -- (2 / sin(4 beta)) \\Delta m_{12}^2
 
         f' mH = (/ (-r)) . (* signMu) $
                 4 * coeff * mH * costh3 * (sinth2 * sinth3
                                            - sinth1 * costh2 * costh3)
+                + coeffM12 * delM12' mH
     in Rel f f'
-
 
 -- |
 -- From the second equation in (24) of
@@ -85,7 +94,7 @@ eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
         g4' mH = - tan2b * mH
                  * (costh2 * sinth3 + costh3 * sinth1 * sinth2) * costh1 * costh3
 
-        g' mHSq = sum $ map ($ mHSq) [g1', g2', g3', g4']
+        g' mH = sum $ map ($ mH) [g1', g2', g3', g4']
     in Rel g g'
 
 {-
@@ -98,19 +107,49 @@ eqG (MixingAngles th1 th2 th3) (TanBeta tanb) =
   By combining them, - (sign(mu) / r) F(mH) + G(mH) = 0,
   which can be used to obtain mH.
 -}
-getMH3 :: MixingAngles
-       -> Double  -- ^ r = \lambda v / |\mu|
-       -> Double  -- ^ sign(\mu)
-       -> TanBeta
-       -> Epsilon
-       -> Maybe Mass
-getMH3 ang r signMu tanb eps =
-    let eq = eqF ang r signMu tanb eps <> eqG ang tanb
-    in case newton eq 1000.0 1.0e-6 of
-           Just mH3 -> if mH3 < 0  -- something went wrong!
-                       then Nothing
-                       else Just $ Mass mH3
-           _        -> Nothing
+getMH3M0 :: MixingAngles
+         -> Double              -- ^ r = \lambda v / |\mu|
+         -> Double              -- ^ sign(\mu)
+         -> TanBeta
+         -> Epsilon
+         -> Maybe (Mass, Mass)  -- ^ (mH3, m0)
+getMH3M0 ang r signMu tanb eps = do
+    let m0F@(Rel m0SqF _) = eqM0Sq ang tanb eps
+        eq = eqF ang r signMu tanb eps m0F <> eqG ang tanb
+
+    mH3 <- newton eq 1000.0 1.0e-6
+    guard $ mH3 > 0  -- something went wrong!
+
+    let m02 = m0SqF mH3
+    guard $ m02 > 0  -- why?
+
+    return (Mass mH3, Mass (sqrt m02))
+
+-- | From Eq. (8) of [arXiv:1407.0955](https://arxiv.org/abs/1407.0955).
+eqM0Sq :: MixingAngles -> TanBeta -> Epsilon -> Rel
+eqM0Sq ang (TanBeta tanb) (Epsilon eps) =
+    let !tan2b = 2 * tanb / (1 - tanb * tanb)
+
+        !oHhVal = oHh ang
+        !oHHVal = oHH ang
+        !oshVal = osh ang
+        !osHVal = osH ang
+        !fac = 1.0 / (1.0 - tan2b / tanb)
+
+        -- m_0^2(m_H) = (1 - tan(2 beta) / tan(beta))^{-1}
+        --              [f(m_H) - (m_Z^2 / tan(beta) + \\epsilon v^2) tan(2 beta)],
+        --
+        -- d m_0^2(m_H) / d m_H =
+        --              (1 - tan(2 beta) / tan(beta))^{-1} f'(m_H).
+        m0Sq mH =
+            let !mH2 = mH * mH
+            in (fac *) $ mHSM2
+               + (mH2 - mHSM2) * oHhVal * (oHhVal + oHHVal * tan2b)
+               - (mHSM2 - mS2) * oshVal * (oshVal + osHVal * tan2b)
+               - (mZ2 / tanb + eps * vEW2) * tan2b
+
+        m0Sq' mH = (fac *) $ 2 * mH * oHhVal * (oHhVal + oHHVal * tan2b)
+    in Rel m0Sq m0Sq'
 
 getMu :: MixingAngles -> Double -> Double -> TanBeta -> Mass -> Mass
 getMu ang r signMu tanb (Mass mH3) =
@@ -154,26 +193,6 @@ newton Rel {..} guess epsilon = newton' 100 guess
                       in if err < epsilon
                          then Just guess1
                          else newton' (i - 1) guess1
-
--- | From Eq. (8) of [arXiv:1407.0955](https://arxiv.org/abs/1407.0955).
-getM0 :: MixingAngles -> TanBeta -> Epsilon -> Mass -> Maybe Mass
-getM0 ang (TanBeta tanb) (Epsilon eps) mH =
-    let mH2 = massSq mH
-        !tan2b = 2 * tanb / (1 - tanb * tanb)
-
-        !oHhVal = oHh ang
-        !oHHVal = oHH ang
-        !oshVal = osh ang
-        !osHVal = osH ang
-
-        m0Sq = mHSM2
-               + (mH2 - mHSM2) * oHhVal * (oHhVal + oHHVal * tan2b)
-               - (mHSM2 - mS2) * oshVal * (oshVal + osHVal * tan2b)
-               + eps * vEW2 * tan2b / tanb
-    in if m0Sq < 0  -- why?
-       -- then Just $ Mass (-1.0)
-       then Nothing
-       else Just $ Mass (sqrt m0Sq)
 
 oHh, oHH, osh, osH :: MixingAngles -> Double
 oHh (MixingAngles (Angle th1) (Angle th2) (Angle th3)) =
