@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                nmssm-lightscalar
-version:             0.2.0.999
+version:             0.3.0.0
 synopsis:            For studies on the light scalar in the NMSSM
 -- description:
 bug-reports:         https://github.com/cbpark/nmssm-lightscalar/issues
