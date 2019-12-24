@@ -1,6 +1,6 @@
 # nmssm-lightscalar
 
-Codes used for analyses in [arXiv:1906.03389](https://arxiv.org/abs/1906.03389).
+Codes used for analyses in Kiwoon Choi, Sang Hui Im, Kwang Sik Jeong, Chan Beom Park, ``Light Higgs bosons in the general NMSSM ,'' [arXiv:1906.03389](https://arxiv.org/abs/1906.03389).
 
 ## Usage
 
@@ -8,25 +8,15 @@ Codes used for analyses in [arXiv:1906.03389](https://arxiv.org/abs/1906.03389).
 $ searchnmssm --help
 Scan the parameter space of the NMSSM
 
-Usage: searchnmssm --rvalue DOUBLE --musign DOUBLE [--tanbeta DOUBLE] [--np INT]
-                   [--output STRING]
+Usage: searchnmssm --rvalue DOUBLE --musign DOUBLE [--tanbeta DOUBLE]
+                   [--epsilon DOUBLE] [--np INT] [--output STRING]
 
 Available options:
   -h,--help                Show this help text
   --rvalue DOUBLE          r = lambda v / |mu|
   --musign DOUBLE          the sign of mu
   --tanbeta DOUBLE         tan(beta)
+  --epsilon DOUBLE         epsilon
   --np INT                 number of parameter points
-  --output STRING          name of the output file
-
-$ sinth1 --help
-sin(theta_1) and \mu_{ZZ} in the NMSSM
-
-Usage: sinth1 --tanbeta DOUBLE --sinth2 DOUBLE [--output STRING]
-
-Available options:
-  -h,--help                Show this help text
-  --tanbeta DOUBLE         tan(beta)
-  --sinth2 DOUBLE          sin(theta_2)
   --output STRING          name of the output file
 ```
